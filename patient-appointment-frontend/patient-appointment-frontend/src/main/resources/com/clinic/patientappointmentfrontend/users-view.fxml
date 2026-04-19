@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns="http://javafx.com/javafx/25"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.clinic.patientappointmentfrontend.UsersController"
+            styleClass="dashboard-root">
+
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="12" styleClass="top-bar">
+            <padding>
+                <Insets top="15" right="20" bottom="15" left="20"/>
+            </padding>
+
+            <Label fx:id="pageTitleLabel" text="Users Management" styleClass="top-title"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="Back to Dashboard" onAction="#onBackClick" styleClass="login-button"/>
+        </HBox>
+    </top>
+
+    <center>
+        <VBox spacing="20">
+            <padding>
+                <Insets top="20" right="20" bottom="20" left="20"/>
+            </padding>
+
+            <VBox spacing="12" styleClass="content-card">
+                <Label text="Create New User" styleClass="section-title"/>
+
+                <HBox spacing="10">
+                    <TextField fx:id="fullNameField" promptText="Full Name" prefWidth="220" styleClass="input-field"/>
+                    <TextField fx:id="emailField" promptText="Email" prefWidth="220" styleClass="input-field"/>
+                    <PasswordField fx:id="passwordField" promptText="Password" prefWidth="180" styleClass="input-field"/>
+                    <ComboBox fx:id="roleComboBox" prefWidth="150" styleClass="input-field"/>
+                    <Button text="Create User" onAction="#onCreateUserClick" styleClass="login-button"/>
+                </HBox>
+
+                <Label fx:id="statusLabel" text="Ready" styleClass="status-label"/>
+            </VBox>
+
+            <HBox spacing="10">
+                <Button text="Refresh" onAction="#onRefreshClick" styleClass="toolbar-button"/>            </HBox>
+
+            <TableView fx:id="usersTable" prefHeight="420">
+                <columns>
+                    <TableColumn fx:id="idColumn" text="ID" prefWidth="80"/>
+                    <TableColumn fx:id="fullNameColumn" text="Full Name" prefWidth="250"/>
+                    <TableColumn fx:id="emailColumn" text="Email" prefWidth="280"/>
+                    <TableColumn fx:id="roleColumn" text="Role" prefWidth="150"/>
+                </columns>
+            </TableView>
+        </VBox>
+    </center>
+
+</BorderPane>

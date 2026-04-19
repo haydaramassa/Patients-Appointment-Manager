@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns="http://javafx.com/javafx/25"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.clinic.patientappointmentfrontend.PatientsController"
+            styleClass="dashboard-root">
+
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="12" styleClass="top-bar">
+            <padding>
+                <Insets top="15" right="20" bottom="15" left="20"/>
+            </padding>
+
+            <Label fx:id="pageTitleLabel" text="Patients" styleClass="top-title"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="Back to Dashboard" onAction="#onBackClick" styleClass="login-button"/>
+        </HBox>
+    </top>
+
+    <center>
+        <VBox spacing="18">
+            <padding>
+                <Insets top="20" right="20" bottom="20" left="20"/>
+            </padding>
+
+            <HBox spacing="10">
+                <TextField fx:id="searchField" promptText="Search by name or phone" prefWidth="300" styleClass="input-field"/>
+                <Button text="Search" onAction="#onSearchClick" styleClass="login-button"/>
+                <Button text="Refresh" onAction="#onRefreshClick" styleClass="toolbar-button"/>            </HBox>
+
+            <TableView fx:id="patientsTable" prefHeight="500">
+                <columns>
+                    <TableColumn fx:id="idColumn" text="ID" prefWidth="70"/>
+                    <TableColumn fx:id="firstNameColumn" text="First Name" prefWidth="140"/>
+                    <TableColumn fx:id="lastNameColumn" text="Last Name" prefWidth="140"/>
+                    <TableColumn fx:id="phoneColumn" text="Phone" prefWidth="140"/>
+                    <TableColumn fx:id="genderColumn" text="Gender" prefWidth="120"/>
+                    <TableColumn fx:id="birthDateColumn" text="Birth Date" prefWidth="140"/>
+                </columns>
+            </TableView>
+        </VBox>
+    </center>
+
+</BorderPane>
