@@ -2,12 +2,17 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Hyperlink?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
 <BorderPane xmlns="http://javafx.com/javafx/25"
@@ -16,51 +21,153 @@
             styleClass="main-root">
 
     <center>
-        <HBox alignment="CENTER" spacing="40.0">
-            <padding>
-                <Insets top="40" right="40" bottom="40" left="40"/>
-            </padding>
+        <StackPane>
+            <Pane fx:id="animationPane"
+                  mouseTransparent="true"
+                  pickOnBounds="false"
+                  styleClass="medical-animation-pane"/>
 
-            <VBox spacing="12.0" maxWidth="320">
-                <Label text="Patient Appointment Manager" styleClass="brand-title"/>
+            <HBox alignment="CENTER" spacing="40.0">
+                <padding>
+                    <Insets top="40" right="40" bottom="40" left="40"/>
+                </padding>
 
-                <Label text="Smart and simple clinic management for appointments, patients, and staff."
-                       wrapText="true"
-                       styleClass="brand-subtitle"/>
-            </VBox>
+                <VBox spacing="12.0" maxWidth="360" prefWidth="360">
+                    <Label text="Patient Appointment Manager"
+                           wrapText="true"
+                           styleClass="brand-title"/>
 
-            <Region prefWidth="30"/>
+                    <Label text="Smart and simple clinic management for appointments, patients, and staff."
+                           wrapText="true"
+                           styleClass="brand-subtitle"/>
+                </VBox>
 
-            <VBox alignment="CENTER_LEFT"
-                  spacing="14.0"
-                  maxWidth="360"
-                  prefWidth="360"
-                  styleClass="login-card">
+                <Region prefWidth="30"/>
 
-                <Label text="Login" styleClass="login-title"/>
+                <VBox alignment="CENTER_LEFT"
+                      spacing="14.0"
+                      maxWidth="420"
+                      prefWidth="420"
+                      styleClass="login-card">
 
-                <Label text="Please enter your account details"
-                       styleClass="login-subtitle"/>
+                    <!-- LOGIN BOX -->
+                    <VBox fx:id="loginBox" spacing="14.0">
 
-                <TextField fx:id="emailField"
-                           promptText="Email"
-                           prefWidth="300"
-                           styleClass="input-field"/>
+                        <Label text="Login" styleClass="login-title"/>
 
-                <PasswordField fx:id="passwordField"
-                               promptText="Password"
-                               prefWidth="300"
-                               styleClass="input-field"/>
+                        <Label text="Please enter your account details"
+                               styleClass="login-subtitle"/>
 
-                <Button text="Login"
-                        onAction="#onLoginClick"
-                        styleClass="login-button"/>
+                        <TextField fx:id="emailField"
+                                   promptText="Email"
+                                   maxWidth="320"
+                                   prefWidth="320"
+                                   styleClass="input-field"/>
 
-                <Label fx:id="statusLabel"
-                       text="Ready"
-                       styleClass="status-label"/>
-            </VBox>
-        </HBox>
+                        <PasswordField fx:id="passwordField"
+                                       promptText="Password"
+                                       maxWidth="320"
+                                       prefWidth="320"
+                                       styleClass="input-field"/>
+
+                        <Button text="Login"
+                                maxWidth="320"
+                                prefWidth="320"
+                                onAction="#onLoginClick"
+                                styleClass="login-button"/>
+
+                        <HBox alignment="CENTER" spacing="4" maxWidth="320" prefWidth="320">
+                            <Label text="You don't have an account? click"
+                                   styleClass="small-text"/>
+                            <Hyperlink text="here"
+                                       onAction="#showRegisterForm"
+                                       styleClass="link-text"/>
+                        </HBox>
+
+                        <Label fx:id="statusLabel"
+                               text="Ready"
+                               maxWidth="320"
+                               prefWidth="320"
+                               wrapText="true"
+                               styleClass="status-label"/>
+                    </VBox>
+
+                    <!-- REGISTER BOX -->
+                    <VBox fx:id="registerBox"
+                          spacing="12.0"
+                          visible="false"
+                          managed="false">
+
+                        <Label text="Create Account" styleClass="login-title"/>
+
+                        <Label text="Register a new clinic user account"
+                               styleClass="login-subtitle"/>
+
+                        <TextField fx:id="registerFullNameField"
+                                   promptText="Full name"
+                                   maxWidth="320"
+                                   prefWidth="320"
+                                   styleClass="input-field"/>
+
+                        <TextField fx:id="registerEmailField"
+                                   promptText="Email"
+                                   maxWidth="320"
+                                   prefWidth="320"
+                                   styleClass="input-field"/>
+
+                        <PasswordField fx:id="registerPasswordField"
+                                       promptText="Password"
+                                       maxWidth="320"
+                                       prefWidth="320"
+                                       styleClass="input-field"/>
+
+                        <PasswordField fx:id="confirmPasswordField"
+                                       promptText="Confirm password"
+                                       maxWidth="320"
+                                       prefWidth="320"
+                                       styleClass="input-field"/>
+
+                        <ProgressBar fx:id="passwordStrengthBar"
+                                     progress="0"
+                                     maxWidth="320"
+                                     prefWidth="320"
+                                     styleClass="password-strength-bar"/>
+
+                        <Label fx:id="passwordStrengthLabel"
+                               text="Password strength"
+                               styleClass="password-hint"/>
+
+                        <ComboBox fx:id="roleComboBox"
+                                  promptText="Select role"
+                                  maxWidth="320"
+                                  prefWidth="320"
+                                  styleClass="input-field"/>
+
+                        <Button text="Register"
+                                maxWidth="320"
+                                prefWidth="320"
+                                onAction="#onRegisterClick"
+                                styleClass="login-button"/>
+
+                        <HBox alignment="CENTER" spacing="4" maxWidth="320" prefWidth="320">
+                            <Label text="Already have an account?"
+                                   styleClass="small-text"/>
+                            <Hyperlink text="Back to login"
+                                       onAction="#showLoginForm"
+                                       styleClass="link-text"/>
+                        </HBox>
+
+                        <Label fx:id="registerStatusLabel"
+                               text="Ready"
+                               maxWidth="320"
+                               prefWidth="320"
+                               wrapText="true"
+                               styleClass="status-label"/>
+                    </VBox>
+
+                </VBox>
+            </HBox>
+        </StackPane>
     </center>
 
 </BorderPane>

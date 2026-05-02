@@ -305,3 +305,179 @@
 .table-view .scroll-bar:horizontal .thumb:hover {
     -fx-background-color: #aebccd;
 }
+
+.small-text {
+    -fx-font-size: 13px;
+    -fx-text-fill: #6b7a90;
+}
+
+.link-text {
+    -fx-font-size: 13px;
+    -fx-text-fill: #2f6fed;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+    -fx-cursor: hand;
+}
+
+.link-text:hover {
+    -fx-text-fill: #255ed0;
+    -fx-underline: true;
+}
+
+.password-strength-bar {
+    -fx-pref-height: 8;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+}
+
+.password-strength-bar .track {
+    -fx-background-color: #e8edf3;
+    -fx-background-radius: 8;
+}
+
+.password-strength-bar {
+    -fx-pref-height: 8;
+    -fx-min-height: 8;
+    -fx-max-height: 8;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+}
+
+.password-strength-bar .track {
+    -fx-background-color: #e8edf3;
+    -fx-background-radius: 8;
+}
+
+.password-strength-bar .bar {
+    -fx-background-radius: 8;
+    -fx-padding: 4px;
+}
+
+.password-hint {
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+}
+
+.password-label-weak {
+    -fx-text-fill: #e74c3c;
+}
+
+.password-label-medium {
+    -fx-text-fill: #f39c12;
+}
+
+.password-label-strong {
+    -fx-text-fill: #1f7a42;
+}
+
+.password-hint {
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+}
+
+.password-label-weak {
+    -fx-text-fill: #e74c3c;
+}
+
+.password-label-medium {
+    -fx-text-fill: #f39c12;
+}
+
+.password-label-strong {
+    -fx-text-fill: #1f7a42;
+}
+
+.password-strength-bar {
+    -fx-pref-height: 8;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+}
+
+.password-strength-bar .track {
+    -fx-background-color: #e8edf3;
+    -fx-background-radius: 8;
+}
+
+.password-weak .bar {
+    -fx-background-color: #e74c3c;
+    -fx-background-radius: 8;
+}
+
+.password-medium .bar {
+    -fx-background-color: #f39c12;
+    -fx-background-radius: 8;
+}
+
+.password-strong .bar {
+    -fx-background-color: #1f7a42;
+    -fx-background-radius: 8;
+}
+
+.password-rules {
+    -fx-font-size: 11px;
+    -fx-text-fill: #7b8ba0;
+}
+.medical-animation-pane {
+    -fx-background-color: transparent;
+}
+
+.login-card {
+    -fx-background-color: rgba(255, 255, 255, 0.95);
+    -fx-background-radius: 22;
+    -fx-padding: 32;
+    -fx-effect: dropshadow(gaussian, rgba(20, 45, 80, 0.16), 24, 0.22, 0, 8);
+}
+
+.small-text {
+    -fx-font-size: 13px;
+    -fx-text-fill: #6b7a90;
+}
+
+.link-text {
+    -fx-font-size: 13px;
+    -fx-text-fill: #2f6fed;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+    -fx-cursor: hand;
+}
+
+.link-text:hover {
+    -fx-text-fill: #255ed0;
+    -fx-underline: true;
+}
+
+.password-strength-bar {
+    -fx-pref-height: 8;
+    -fx-min-height: 8;
+    -fx-max-height: 8;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+}
+
+.password-strength-bar .track {
+    -fx-background-color: #e8edf3;
+    -fx-background-radius: 8;
+}
+
+.password-strength-bar .bar {
+    -fx-background-radius: 8;
+    -fx-padding: 4px;
+}
+
+.password-hint {
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #5f6f86;
+}
+
+.password-label-weak {
+    -fx-text-fill: #e74c3c;
+}
+
+.password-label-medium {
+    -fx-text-fill: #f39c12;
+}
+
+.password-label-strong {
+    -fx-text-fill: #1f7a42;
+}
