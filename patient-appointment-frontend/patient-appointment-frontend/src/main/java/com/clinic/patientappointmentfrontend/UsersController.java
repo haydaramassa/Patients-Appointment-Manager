@@ -63,6 +63,13 @@ public class UsersController {
         roleColumn.setCellValueFactory(new PropertyValueFactory<>("role"));
 
         usersTable.setItems(userItems);
+
+        Tooltip passwordTooltip = new Tooltip(
+                "Password must contain at least 8 characters, uppercase letter, lowercase letter, number, and special character."
+        );
+        passwordTooltip.setWrapText(true);
+        passwordTooltip.setMaxWidth(320);
+        Tooltip.install(passwordField, passwordTooltip);
     }
 
     public void setUserData(String fullName, String role, String basicAuthToken) {
@@ -81,35 +88,52 @@ public class UsersController {
         String password = passwordField.getText();
         String role = roleComboBox.getValue();
 
-        statusLabel.getStyleClass().removeAll("status-success", "status-error");
+        clearStatus();
 
         if (isBlank(fullName) || isBlank(email) || isBlank(password) || isBlank(role)) {
-            statusLabel.setText("Please fill all fields");
-            statusLabel.getStyleClass().add("status-error");
+            showError("Please fill all fields");
+            return;
+        }
+
+        fullName = fullName.trim();
+        email = email.trim();
+
+        if (fullName.length() < 3) {
+            showError("Full name must be at least 3 characters");
+            return;
+        }
+
+        if (!isValidEmail(email)) {
+            showError("Please enter a valid email address");
+            return;
+        }
+
+        if (!isStrongPassword(password)) {
+            showError("Password is not strong enough");
+            return;
+        }
+
+        if (isEmailAlreadyUsed(email)) {
+            showError("This email is already registered");
             return;
         }
 
         boolean created = userService.createUser(currentBasicAuthToken, fullName, email, password, role);
 
         if (created) {
-            statusLabel.setText("User created successfully");
-            statusLabel.getStyleClass().add("status-success");
+            showSuccess("User created successfully");
 
-            fullNameField.clear();
-            emailField.clear();
-            passwordField.clear();
-            roleComboBox.setValue("SECRETARY");
-
+            clearForm();
             loadUsers();
         } else {
-            statusLabel.setText("Failed to create user");
-            statusLabel.getStyleClass().add("status-error");
+            showError("Failed to create user. Please check the backend response.");
         }
     }
 
     @FXML
     protected void onRefreshClick() {
         loadUsers();
+        showSuccess("Users list refreshed");
     }
 
     @FXML
@@ -123,7 +147,70 @@ public class UsersController {
         usersTable.setItems(userItems);
     }
 
+    private void clearForm() {
+        fullNameField.clear();
+        emailField.clear();
+        passwordField.clear();
+        roleComboBox.setValue("SECRETARY");
+    }
+
+    private boolean isEmailAlreadyUsed(String email) {
+        return userItems.stream()
+                .anyMatch(user -> user.getEmail() != null && user.getEmail().equalsIgnoreCase(email));
+    }
+
+    private boolean isStrongPassword(String password) {
+        return calculatePasswordScore(password) >= 5;
+    }
+
+    private int calculatePasswordScore(String password) {
+        int score = 0;
+
+        if (password.length() >= 8) {
+            score++;
+        }
+
+        if (password.matches(".*[A-Z].*")) {
+            score++;
+        }
+
+        if (password.matches(".*[a-z].*")) {
+            score++;
+        }
+
+        if (password.matches(".*\\d.*")) {
+            score++;
+        }
+
+        if (password.matches(".*[^A-Za-z0-9].*")) {
+            score++;
+        }
+
+        return score;
+    }
+
+    private boolean isValidEmail(String email) {
+        return email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
+    }
+
     private boolean isBlank(String value) {
         return value == null || value.isBlank();
+    }
+
+    private void clearStatus() {
+        statusLabel.getStyleClass().removeAll("status-success", "status-error");
+        statusLabel.setText("Ready");
+    }
+
+    private void showSuccess(String message) {
+        statusLabel.getStyleClass().removeAll("status-success", "status-error");
+        statusLabel.setText(message);
+        statusLabel.getStyleClass().add("status-success");
+    }
+
+    private void showError(String message) {
+        statusLabel.getStyleClass().removeAll("status-success", "status-error");
+        statusLabel.setText(message);
+        statusLabel.getStyleClass().add("status-error");
     }
 }
