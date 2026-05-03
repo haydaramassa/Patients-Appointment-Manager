@@ -102,6 +102,22 @@ public class UserService {
         return users;
     }
 
+    public boolean deleteUser(String basicAuthToken, Long userId) {
+        try {
+            URL url = new URL("http://localhost:8080/api/users/" + userId);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            connection.setRequestMethod("DELETE");
+            connection.setRequestProperty("Authorization", "Basic " + basicAuthToken);
+
+            int responseCode = connection.getResponseCode();
+            return responseCode >= 200 && responseCode < 300;
+
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
     private String extractString(String json, String key) {
         String search = "\"" + key + "\":";
         int start = json.indexOf(search);

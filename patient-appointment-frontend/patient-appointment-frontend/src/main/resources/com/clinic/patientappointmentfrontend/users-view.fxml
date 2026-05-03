@@ -45,7 +45,14 @@
             </VBox>
 
             <HBox spacing="10">
-                <Button text="Refresh" onAction="#onRefreshClick" styleClass="toolbar-button"/>            </HBox>
+                <Button text="Refresh"
+                        onAction="#onRefreshClick"
+                        styleClass="toolbar-button"/>
+
+                <Button text="Delete Selected User"
+                        onAction="#onDeleteSelectedUserClick"
+                        styleClass="danger-button"/>
+            </HBox>
 
             <TableView fx:id="usersTable" prefHeight="420">
                 <columns>

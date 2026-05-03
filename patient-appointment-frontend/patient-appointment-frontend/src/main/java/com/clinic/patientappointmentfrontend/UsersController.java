@@ -8,6 +8,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.List;
 
 public class UsersController {
@@ -122,7 +124,6 @@ public class UsersController {
 
         if (created) {
             showSuccess("User created successfully");
-
             clearForm();
             loadUsers();
         } else {
@@ -134,6 +135,52 @@ public class UsersController {
     protected void onRefreshClick() {
         loadUsers();
         showSuccess("Users list refreshed");
+    }
+
+    @FXML
+    protected void onDeleteSelectedUserClick() {
+        UserModel selectedUser = usersTable.getSelectionModel().getSelectedItem();
+
+        clearStatus();
+
+        if (selectedUser == null) {
+            showError("Please select a user to delete");
+            return;
+        }
+
+        String currentEmail = getCurrentLoggedInEmail();
+
+        if (selectedUser.getEmail() != null
+                && selectedUser.getEmail().equalsIgnoreCase(currentEmail)) {
+            showError("You cannot delete your own account");
+            return;
+        }
+
+        Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmation.setTitle("Delete User");
+        confirmation.setHeaderText("Delete selected user?");
+        confirmation.setContentText(
+                "Are you sure you want to delete this user?\n\n"
+                        + "Name: " + selectedUser.getFullName() + "\n"
+                        + "Email: " + selectedUser.getEmail() + "\n"
+                        + "Role: " + selectedUser.getRole()
+        );
+
+        ButtonType result = confirmation.showAndWait().orElse(ButtonType.CANCEL);
+
+        if (result != ButtonType.OK) {
+            showError("Delete cancelled");
+            return;
+        }
+
+        boolean deleted = userService.deleteUser(currentBasicAuthToken, selectedUser.getId());
+
+        if (deleted) {
+            showSuccess("User deleted successfully");
+            loadUsers();
+        } else {
+            showError("Failed to delete user. You cannot delete the last admin.");
+        }
     }
 
     @FXML
@@ -195,6 +242,30 @@ public class UsersController {
 
     private boolean isBlank(String value) {
         return value == null || value.isBlank();
+    }
+
+    private String getCurrentLoggedInEmail() {
+        if (currentBasicAuthToken == null || currentBasicAuthToken.isBlank()) {
+            return "";
+        }
+
+        try {
+            String decoded = new String(
+                    Base64.getDecoder().decode(currentBasicAuthToken),
+                    StandardCharsets.UTF_8
+            );
+
+            int separatorIndex = decoded.indexOf(":");
+
+            if (separatorIndex == -1) {
+                return "";
+            }
+
+            return decoded.substring(0, separatorIndex);
+
+        } catch (IllegalArgumentException e) {
+            return "";
+        }
     }
 
     private void clearStatus() {

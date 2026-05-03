@@ -70,13 +70,6 @@ public class UserService {
         return toResponse(updatedUser);
     }
 
-    public String deleteUser(Long id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
-
-        userRepository.delete(user);
-        return "User deleted successfully";
-    }
 
     private UserResponse toResponse(User user) {
         return new UserResponse(
@@ -85,5 +78,20 @@ public class UserService {
                 user.getEmail(),
                 user.getRole().name()
         );
+    }
+    public String deleteUser(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
+
+        if (user.getRole() == com.clinic.user.entity.Role.ADMIN) {
+            long adminCount = userRepository.countByRole(com.clinic.user.entity.Role.ADMIN);
+
+            if (adminCount <= 1) {
+                throw new RuntimeException("Cannot delete the last admin user");
+            }
+        }
+
+        userRepository.delete(user);
+        return "User deleted successfully";
     }
 }
