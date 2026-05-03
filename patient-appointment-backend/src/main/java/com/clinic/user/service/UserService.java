@@ -70,15 +70,20 @@ public class UserService {
         return toResponse(updatedUser);
     }
 
+    public String resetPassword(Long id, String newPassword) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
 
-    private UserResponse toResponse(User user) {
-        return new UserResponse(
-                user.getId(),
-                user.getFullName(),
-                user.getEmail(),
-                user.getRole().name()
-        );
+        if (newPassword == null || newPassword.isBlank()) {
+            throw new RuntimeException("Password cannot be empty");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+
+        return "Password reset successfully";
     }
+
     public String deleteUser(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
@@ -93,5 +98,14 @@ public class UserService {
 
         userRepository.delete(user);
         return "User deleted successfully";
+    }
+
+    private UserResponse toResponse(User user) {
+        return new UserResponse(
+                user.getId(),
+                user.getFullName(),
+                user.getEmail(),
+                user.getRole().name()
+        );
     }
 }

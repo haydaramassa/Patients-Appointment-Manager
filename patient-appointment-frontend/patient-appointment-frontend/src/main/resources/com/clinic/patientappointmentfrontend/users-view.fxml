@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
@@ -10,58 +16,134 @@
 <BorderPane xmlns="http://javafx.com/javafx/25"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.clinic.patientappointmentfrontend.UsersController"
-            styleClass="dashboard-root">
+            styleClass="main-root">
 
     <top>
-        <HBox alignment="CENTER_LEFT" spacing="12" styleClass="top-bar">
+        <HBox alignment="CENTER_LEFT"
+              spacing="20"
+              styleClass="top-bar">
+
             <padding>
-                <Insets top="15" right="20" bottom="15" left="20"/>
+                <Insets top="18" right="22" bottom="18" left="22"/>
             </padding>
 
-            <Label fx:id="pageTitleLabel" text="Users Management" styleClass="top-title"/>
+            <Label fx:id="pageTitleLabel"
+                   text="Users Management"
+                   styleClass="page-title"/>
+
             <Region HBox.hgrow="ALWAYS"/>
-            <Button text="Back to Dashboard" onAction="#onBackClick" styleClass="login-button"/>
+
+            <Button text="Back to Dashboard"
+                    onAction="#onBackClick"
+                    prefWidth="260"
+                    minHeight="46"
+                    styleClass="back-button"/>
         </HBox>
     </top>
 
     <center>
-        <VBox spacing="20">
+        <VBox spacing="18"
+              styleClass="content-area">
+
             <padding>
-                <Insets top="20" right="20" bottom="20" left="20"/>
+                <Insets top="22" right="22" bottom="22" left="22"/>
             </padding>
 
-            <VBox spacing="12" styleClass="content-card">
-                <Label text="Create New User" styleClass="section-title"/>
+            <VBox spacing="14"
+                  styleClass="form-card">
 
-                <HBox spacing="10">
-                    <TextField fx:id="fullNameField" promptText="Full Name" prefWidth="220" styleClass="input-field"/>
-                    <TextField fx:id="emailField" promptText="Email" prefWidth="220" styleClass="input-field"/>
-                    <PasswordField fx:id="passwordField" promptText="Password" prefWidth="180" styleClass="input-field"/>
-                    <ComboBox fx:id="roleComboBox" prefWidth="150" styleClass="input-field"/>
-                    <Button text="Create User" onAction="#onCreateUserClick" styleClass="login-button"/>
+                <Label text="User Form"
+                       styleClass="section-title"/>
+
+                <HBox spacing="12"
+                      alignment="CENTER_LEFT">
+
+                    <TextField fx:id="fullNameField"
+                               promptText="Full Name"
+                               prefWidth="260"
+                               styleClass="input-field"/>
+
+                    <TextField fx:id="emailField"
+                               promptText="Email"
+                               prefWidth="300"
+                               styleClass="input-field"/>
+
+                    <PasswordField fx:id="passwordField"
+                                   promptText="Password for new user only"
+                                   prefWidth="260"
+                                   styleClass="input-field"/>
+
+                    <ComboBox fx:id="roleComboBox"
+                              prefWidth="180"
+                              styleClass="input-field"/>
                 </HBox>
 
-                <Label fx:id="statusLabel" text="Ready" styleClass="status-label"/>
+                <HBox spacing="12"
+                      alignment="CENTER_LEFT">
+
+                    <Button text="Create User"
+                            onAction="#onCreateUserClick"
+                            prefWidth="220"
+                            styleClass="login-button"/>
+
+                    <Button text="Update User"
+                            onAction="#onUpdateUserClick"
+                            prefWidth="220"
+                            styleClass="toolbar-button"/>
+
+                    <Button text="Clear Form"
+                            onAction="#onClearFormClick"
+                            prefWidth="160"
+                            styleClass="toolbar-button"/>
+
+                    <Region HBox.hgrow="ALWAYS"/>
+
+                    <Label fx:id="statusLabel"
+                           text="Ready"
+                           wrapText="true"
+                           styleClass="status-label"/>
+                </HBox>
             </VBox>
 
-            <HBox spacing="10">
+            <HBox spacing="10"
+                  alignment="CENTER_LEFT">
+
                 <Button text="Refresh"
                         onAction="#onRefreshClick"
                         styleClass="toolbar-button"/>
 
-                <Button text="Delete Selected User"
-                        onAction="#onDeleteSelectedUserClick"
-                        styleClass="danger-button"/>
+                <Label text="Use the action buttons inside each row to edit, reset password, or delete users."
+                       styleClass="table-tip-label"/>
             </HBox>
 
-            <TableView fx:id="usersTable" prefHeight="420">
+            <TableView fx:id="usersTable"
+                       VBox.vgrow="ALWAYS"
+                       styleClass="data-table">
+
                 <columns>
-                    <TableColumn fx:id="idColumn" text="ID" prefWidth="80"/>
-                    <TableColumn fx:id="fullNameColumn" text="Full Name" prefWidth="250"/>
-                    <TableColumn fx:id="emailColumn" text="Email" prefWidth="280"/>
-                    <TableColumn fx:id="roleColumn" text="Role" prefWidth="150"/>
+                    <TableColumn fx:id="idColumn"
+                                 text="ID"
+                                 prefWidth="70"/>
+
+                    <TableColumn fx:id="fullNameColumn"
+                                 text="Full Name"
+                                 prefWidth="240"/>
+
+                    <TableColumn fx:id="emailColumn"
+                                 text="Email"
+                                 prefWidth="310"/>
+
+                    <TableColumn fx:id="roleColumn"
+                                 text="Role"
+                                 prefWidth="150"/>
+
+                    <TableColumn fx:id="actionsColumn"
+                                 text="Actions"
+                                 prefWidth="430"/>
                 </columns>
+
             </TableView>
+
         </VBox>
     </center>
 

@@ -34,6 +34,7 @@ public class UserService {
             while (scanner.hasNextLine()) {
                 response.append(scanner.nextLine());
             }
+
             scanner.close();
 
             return parseUsers(response.toString());
@@ -60,7 +61,12 @@ public class UserService {
                       "password": "%s",
                       "role": "%s"
                     }
-                    """, fullName, email, password, role);
+                    """,
+                    escapeJson(fullName),
+                    escapeJson(email),
+                    escapeJson(password),
+                    escapeJson(role)
+            );
 
             try (OutputStream os = connection.getOutputStream()) {
                 byte[] input = jsonBody.getBytes(StandardCharsets.UTF_8);
@@ -75,31 +81,61 @@ public class UserService {
         }
     }
 
-    private List<UserModel> parseUsers(String json) {
-        List<UserModel> users = new ArrayList<>();
+    public boolean updateUser(String basicAuthToken, Long userId, String fullName, String email, String role) {
+        try {
+            URL url = new URL("http://localhost:8080/api/users/" + userId);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
-        if (json == null || json.isBlank() || json.equals("[]")) {
-            return users;
+            connection.setRequestMethod("PUT");
+            connection.setRequestProperty("Content-Type", "application/json");
+            connection.setRequestProperty("Authorization", "Basic " + basicAuthToken);
+            connection.setDoOutput(true);
+
+            String jsonBody = String.format("""
+                    {
+                      "fullName": "%s",
+                      "email": "%s",
+                      "password": "",
+                      "role": "%s"
+                    }
+                    """,
+                    escapeJson(fullName),
+                    escapeJson(email),
+                    escapeJson(role)
+            );
+
+            try (OutputStream os = connection.getOutputStream()) {
+                byte[] input = jsonBody.getBytes(StandardCharsets.UTF_8);
+                os.write(input, 0, input.length);
+            }
+
+            int responseCode = connection.getResponseCode();
+
+            Scanner scanner;
+            if (responseCode >= 200 && responseCode < 300) {
+                scanner = new Scanner(connection.getInputStream(), StandardCharsets.UTF_8);
+            } else {
+                scanner = new Scanner(connection.getErrorStream(), StandardCharsets.UTF_8);
+            }
+
+            StringBuilder response = new StringBuilder();
+            while (scanner != null && scanner.hasNextLine()) {
+                response.append(scanner.nextLine());
+            }
+
+            if (scanner != null) {
+                scanner.close();
+            }
+
+            System.out.println("Update user response code: " + responseCode);
+            System.out.println("Update user response body: " + response);
+
+            return responseCode >= 200 && responseCode < 300;
+
+        } catch (IOException e) {
+            System.out.println("Update user error: " + e.getMessage());
+            return false;
         }
-
-        String trimmed = json.substring(1, json.length() - 1);
-        String[] objects = trimmed.split("\\},\\s*\\{");
-
-        for (String object : objects) {
-            String obj = object;
-            if (!obj.startsWith("{")) obj = "{" + obj;
-            if (!obj.endsWith("}")) obj = obj + "}";
-
-            UserModel user = new UserModel();
-            user.setId(extractLong(obj, "id"));
-            user.setFullName(extractString(obj, "fullName"));
-            user.setEmail(extractString(obj, "email"));
-            user.setRole(extractString(obj, "role"));
-
-            users.add(user);
-        }
-
-        return users;
     }
 
     public boolean deleteUser(String basicAuthToken, Long userId) {
@@ -118,10 +154,107 @@ public class UserService {
         }
     }
 
+    public boolean resetPassword(String basicAuthToken, Long userId, String newPassword) {
+        try {
+            URL url = new URL("http://localhost:8080/api/users/" + userId + "/reset-password");
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Content-Type", "application/json");
+            connection.setRequestProperty("Authorization", "Basic " + basicAuthToken);
+            connection.setDoOutput(true);
+
+            String jsonBody = String.format("""
+                    {
+                      "newPassword": "%s"
+                    }
+                    """,
+                    escapeJson(newPassword)
+            );
+
+            try (OutputStream os = connection.getOutputStream()) {
+                byte[] input = jsonBody.getBytes(StandardCharsets.UTF_8);
+                os.write(input, 0, input.length);
+            }
+
+            int responseCode = connection.getResponseCode();
+
+            Scanner scanner;
+            if (responseCode >= 200 && responseCode < 300) {
+                scanner = new Scanner(connection.getInputStream(), StandardCharsets.UTF_8);
+            } else {
+                scanner = new Scanner(connection.getErrorStream(), StandardCharsets.UTF_8);
+            }
+
+            StringBuilder response = new StringBuilder();
+            while (scanner != null && scanner.hasNextLine()) {
+                response.append(scanner.nextLine());
+            }
+
+            if (scanner != null) {
+                scanner.close();
+            }
+
+            System.out.println("Reset password response code: " + responseCode);
+            System.out.println("Reset password response body: " + response);
+
+            return responseCode >= 200 && responseCode < 300;
+
+        } catch (IOException e) {
+            System.out.println("Reset password error: " + e.getMessage());
+            return false;
+        }
+    }
+
+    private List<UserModel> parseUsers(String json) {
+        List<UserModel> users = new ArrayList<>();
+
+        if (json == null || json.isBlank() || json.equals("[]")) {
+            return users;
+        }
+
+        String trimmed = json.substring(1, json.length() - 1);
+        String[] objects = trimmed.split("\\},\\s*\\{");
+
+        for (String object : objects) {
+            String obj = object;
+            if (!obj.startsWith("{")) {
+                obj = "{" + obj;
+            }
+
+            if (!obj.endsWith("}")) {
+                obj = obj + "}";
+            }
+
+            UserModel user = new UserModel();
+            user.setId(extractLong(obj, "id"));
+            user.setFullName(extractString(obj, "fullName"));
+            user.setEmail(extractString(obj, "email"));
+            user.setRole(extractString(obj, "role"));
+
+            users.add(user);
+        }
+
+        return users;
+    }
+
+    private String escapeJson(String value) {
+        if (value == null) {
+            return "";
+        }
+
+        return value
+                .replace("\\", "\\\\")
+                .replace("\"", "\\\"");
+    }
+
     private String extractString(String json, String key) {
         String search = "\"" + key + "\":";
         int start = json.indexOf(search);
-        if (start == -1) return "";
+
+        if (start == -1) {
+            return "";
+        }
 
         start += search.length();
 
@@ -136,20 +269,34 @@ public class UserService {
         if (start < json.length() && json.charAt(start) == '"') {
             start++;
             int end = json.indexOf("\"", start);
-            if (end == -1) return "";
+
+            if (end == -1) {
+                return "";
+            }
+
             return json.substring(start, end);
         }
 
         int end = json.indexOf(",", start);
-        if (end == -1) end = json.indexOf("}", start);
-        if (end == -1) return "";
+
+        if (end == -1) {
+            end = json.indexOf("}", start);
+        }
+
+        if (end == -1) {
+            return "";
+        }
 
         return json.substring(start, end).trim();
     }
 
     private Long extractLong(String json, String key) {
         String value = extractString(json, key);
-        if (value == null || value.isBlank()) return null;
+
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+
         return Long.parseLong(value);
     }
 }

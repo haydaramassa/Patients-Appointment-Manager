@@ -2,8 +2,24 @@
     -fx-font-family: "Segoe UI";
 }
 
+/* =========================
+   Global Background
+========================= */
+
 .main-root {
     -fx-background-color: linear-gradient(to bottom right, #f4f7fb, #e8f0f7);
+}
+
+.dashboard-root {
+    -fx-background-color: linear-gradient(to bottom right, #f4f7fb, #e8f0f7);
+}
+
+/* =========================
+   Login / Register Page
+========================= */
+
+.medical-animation-pane {
+    -fx-background-color: transparent;
 }
 
 .brand-title {
@@ -18,10 +34,10 @@
 }
 
 .login-card {
-    -fx-background-color: white;
-    -fx-background-radius: 18;
-    -fx-padding: 30;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 20, 0.15, 0, 4);
+    -fx-background-color: rgba(255, 255, 255, 0.95);
+    -fx-background-radius: 22;
+    -fx-padding: 32;
+    -fx-effect: dropshadow(gaussian, rgba(20, 45, 80, 0.16), 24, 0.22, 0, 8);
 }
 
 .login-title {
@@ -35,6 +51,36 @@
     -fx-text-fill: #6b7a90;
 }
 
+.small-text {
+    -fx-font-size: 13px;
+    -fx-text-fill: #6b7a90;
+}
+
+.link-text {
+    -fx-font-size: 13px;
+    -fx-text-fill: #2f6fed;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+    -fx-cursor: hand;
+}
+
+.link-text:hover {
+    -fx-text-fill: #255ed0;
+    -fx-underline: true;
+}
+
+.role-info-label {
+    -fx-font-size: 12px;
+    -fx-text-fill: #5f6f86;
+    -fx-background-color: rgba(47, 111, 237, 0.08);
+    -fx-background-radius: 10;
+    -fx-padding: 8 10;
+}
+
+/* =========================
+   Inputs
+========================= */
+
 .input-field {
     -fx-background-radius: 10;
     -fx-border-radius: 10;
@@ -42,12 +88,17 @@
     -fx-background-color: #f9fbfd;
     -fx-pref-height: 42;
     -fx-font-size: 13px;
+    -fx-padding: 0 10;
 }
 
 .input-field:focused {
     -fx-border-color: #2f6fed;
     -fx-background-color: white;
 }
+
+/* =========================
+   Buttons
+========================= */
 
 .login-button {
     -fx-background-color: #2f6fed;
@@ -56,7 +107,6 @@
     -fx-font-weight: bold;
     -fx-background-radius: 10;
     -fx-pref-height: 44;
-    -fx-pref-width: 300;
     -fx-cursor: hand;
 }
 
@@ -67,17 +117,62 @@
 .toolbar-button {
     -fx-background-color: #2f6fed;
     -fx-text-fill: white;
-    -fx-font-size: 14px;
     -fx-font-weight: bold;
+    -fx-font-size: 13px;
     -fx-background-radius: 10;
-    -fx-pref-width: 140;
-    -fx-pref-height: 42;
+    -fx-padding: 10 18;
     -fx-cursor: hand;
 }
 
 .toolbar-button:hover {
     -fx-background-color: #255ed0;
 }
+
+.back-button {
+    -fx-background-color: #2f6fed;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-background-radius: 12;
+    -fx-padding: 12 22;
+    -fx-cursor: hand;
+}
+
+.back-button:hover {
+    -fx-background-color: #255ed0;
+}
+
+.danger-button {
+    -fx-background-color: #e74c3c;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 10;
+    -fx-padding: 10 18;
+    -fx-cursor: hand;
+}
+
+.danger-button:hover {
+    -fx-background-color: #c0392b;
+}
+
+.logout-button {
+    -fx-background-color: #e74c3c;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 10;
+    -fx-pref-width: 160;
+    -fx-pref-height: 42;
+    -fx-cursor: hand;
+}
+
+.logout-button:hover {
+    -fx-background-color: #c0392b;
+}
+
+/* =========================
+   Status Messages
+========================= */
 
 .status-label {
     -fx-font-size: 13px;
@@ -92,9 +187,49 @@
     -fx-text-fill: #c0392b;
 }
 
-.dashboard-root {
-    -fx-background-color: linear-gradient(to bottom right, #f4f7fb, #e8f0f7);
+/* =========================
+   Password Strength
+========================= */
+
+.password-strength-bar {
+    -fx-pref-height: 8;
+    -fx-min-height: 8;
+    -fx-max-height: 8;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
 }
+
+.password-strength-bar .track {
+    -fx-background-color: #e8edf3;
+    -fx-background-radius: 8;
+}
+
+.password-strength-bar .bar {
+    -fx-background-radius: 8;
+    -fx-padding: 4px;
+}
+
+.password-hint {
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #5f6f86;
+}
+
+.password-label-weak {
+    -fx-text-fill: #e74c3c;
+}
+
+.password-label-medium {
+    -fx-text-fill: #f39c12;
+}
+
+.password-label-strong {
+    -fx-text-fill: #1f7a42;
+}
+
+/* =========================
+   Dashboard
+========================= */
 
 .top-bar {
     -fx-background-color: white;
@@ -110,6 +245,12 @@
 .top-subtitle {
     -fx-font-size: 13px;
     -fx-text-fill: #6b7a90;
+}
+
+.page-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1f3b5b;
 }
 
 .dashboard-title {
@@ -135,20 +276,36 @@
     -fx-text-fill: #1f3b5b;
 }
 
-.logout-button {
-    -fx-background-color: #e74c3c;
-    -fx-text-fill: white;
-    -fx-font-size: 14px;
-    -fx-font-weight: bold;
-    -fx-background-radius: 10;
-    -fx-pref-width: 160;
-    -fx-pref-height: 42;
-    -fx-cursor: hand;
+.dashboard-content {
+    -fx-background-color: transparent;
 }
 
-.logout-button:hover {
-    -fx-background-color: #c0392b;
+.content-area {
+    -fx-background-color: transparent;
 }
+
+.form-card {
+    -fx-background-color: white;
+    -fx-background-radius: 16;
+    -fx-padding: 20;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 16, 0.12, 0, 3);
+}
+
+.content-card {
+    -fx-background-color: white;
+    -fx-background-radius: 16;
+    -fx-padding: 20;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 16, 0.12, 0, 3);
+}
+
+.card-text {
+    -fx-font-size: 14px;
+    -fx-text-fill: #5f6f86;
+}
+
+/* =========================
+   Sidebar
+========================= */
 
 .sidebar {
     -fx-background-color: #1f3b5b;
@@ -190,9 +347,9 @@
     -fx-background-color: #c0392b;
 }
 
-.dashboard-content {
-    -fx-background-color: transparent;
-}
+/* =========================
+   Statistic Cards
+========================= */
 
 .stat-card {
     -fx-background-color: white;
@@ -215,17 +372,9 @@
     -fx-text-fill: #2f6fed;
 }
 
-.content-card {
-    -fx-background-color: white;
-    -fx-background-radius: 16;
-    -fx-padding: 20;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 16, 0.12, 0, 3);
-}
-
-.card-text {
-    -fx-font-size: 14px;
-    -fx-text-fill: #5f6f86;
-}
+/* =========================
+   Tables
+========================= */
 
 .table-view {
     -fx-background-color: white;
@@ -306,198 +455,40 @@
     -fx-background-color: #aebccd;
 }
 
-.small-text {
+/* =========================
+   Table Row Actions
+========================= */
+
+.table-tip-label {
     -fx-font-size: 13px;
-    -fx-text-fill: #6b7a90;
+    -fx-text-fill: #5f6f86;
+    -fx-padding: 9 0 0 6;
 }
 
-.link-text {
-    -fx-font-size: 13px;
-    -fx-text-fill: #2f6fed;
-    -fx-border-color: transparent;
-    -fx-padding: 0;
+.table-action-button {
+    -fx-background-color: #2f6fed;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+    -fx-background-radius: 8;
+    -fx-padding: 6 10;
     -fx-cursor: hand;
 }
 
-.link-text:hover {
-    -fx-text-fill: #255ed0;
-    -fx-underline: true;
+.table-action-button:hover {
+    -fx-background-color: #255ed0;
 }
 
-.password-strength-bar {
-    -fx-pref-height: 8;
-    -fx-background-radius: 8;
-    -fx-border-radius: 8;
-}
-
-.password-strength-bar .track {
-    -fx-background-color: #e8edf3;
-    -fx-background-radius: 8;
-}
-
-.password-strength-bar {
-    -fx-pref-height: 8;
-    -fx-min-height: 8;
-    -fx-max-height: 8;
-    -fx-background-radius: 8;
-    -fx-border-radius: 8;
-}
-
-.password-strength-bar .track {
-    -fx-background-color: #e8edf3;
-    -fx-background-radius: 8;
-}
-
-.password-strength-bar .bar {
-    -fx-background-radius: 8;
-    -fx-padding: 4px;
-}
-
-.password-hint {
-    -fx-font-size: 12px;
-    -fx-font-weight: 600;
-}
-
-.password-label-weak {
-    -fx-text-fill: #e74c3c;
-}
-
-.password-label-medium {
-    -fx-text-fill: #f39c12;
-}
-
-.password-label-strong {
-    -fx-text-fill: #1f7a42;
-}
-
-.password-hint {
-    -fx-font-size: 12px;
-    -fx-font-weight: 600;
-}
-
-.password-label-weak {
-    -fx-text-fill: #e74c3c;
-}
-
-.password-label-medium {
-    -fx-text-fill: #f39c12;
-}
-
-.password-label-strong {
-    -fx-text-fill: #1f7a42;
-}
-
-.password-strength-bar {
-    -fx-pref-height: 8;
-    -fx-background-radius: 8;
-    -fx-border-radius: 8;
-}
-
-.password-strength-bar .track {
-    -fx-background-color: #e8edf3;
-    -fx-background-radius: 8;
-}
-
-.password-weak .bar {
-    -fx-background-color: #e74c3c;
-    -fx-background-radius: 8;
-}
-
-.password-medium .bar {
-    -fx-background-color: #f39c12;
-    -fx-background-radius: 8;
-}
-
-.password-strong .bar {
-    -fx-background-color: #1f7a42;
-    -fx-background-radius: 8;
-}
-
-.password-rules {
-    -fx-font-size: 11px;
-    -fx-text-fill: #7b8ba0;
-}
-.medical-animation-pane {
-    -fx-background-color: transparent;
-}
-
-.login-card {
-    -fx-background-color: rgba(255, 255, 255, 0.95);
-    -fx-background-radius: 22;
-    -fx-padding: 32;
-    -fx-effect: dropshadow(gaussian, rgba(20, 45, 80, 0.16), 24, 0.22, 0, 8);
-}
-
-.small-text {
-    -fx-font-size: 13px;
-    -fx-text-fill: #6b7a90;
-}
-
-.link-text {
-    -fx-font-size: 13px;
-    -fx-text-fill: #2f6fed;
-    -fx-border-color: transparent;
-    -fx-padding: 0;
-    -fx-cursor: hand;
-}
-
-.link-text:hover {
-    -fx-text-fill: #255ed0;
-    -fx-underline: true;
-}
-
-.password-strength-bar {
-    -fx-pref-height: 8;
-    -fx-min-height: 8;
-    -fx-max-height: 8;
-    -fx-background-radius: 8;
-    -fx-border-radius: 8;
-}
-
-.password-strength-bar .track {
-    -fx-background-color: #e8edf3;
-    -fx-background-radius: 8;
-}
-
-.password-strength-bar .bar {
-    -fx-background-radius: 8;
-    -fx-padding: 4px;
-}
-
-.password-hint {
-    -fx-font-size: 12px;
-    -fx-font-weight: 600;
-    -fx-text-fill: #5f6f86;
-}
-
-.password-label-weak {
-    -fx-text-fill: #e74c3c;
-}
-
-.password-label-medium {
-    -fx-text-fill: #f39c12;
-}
-
-.password-label-strong {
-    -fx-text-fill: #1f7a42;
-}
-.role-info-label {
-    -fx-font-size: 12px;
-    -fx-text-fill: #5f6f86;
-    -fx-background-color: rgba(47, 111, 237, 0.08);
-    -fx-background-radius: 10;
-    -fx-padding: 8 10;
-}
-
-.danger-button {
+.table-danger-button {
     -fx-background-color: #e74c3c;
     -fx-text-fill: white;
     -fx-font-weight: bold;
-    -fx-background-radius: 10;
-    -fx-padding: 10 18;
+    -fx-font-size: 12px;
+    -fx-background-radius: 8;
+    -fx-padding: 6 10;
     -fx-cursor: hand;
 }
 
-.danger-button:hover {
+.table-danger-button:hover {
     -fx-background-color: #c0392b;
 }

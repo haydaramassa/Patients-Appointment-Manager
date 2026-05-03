@@ -7,10 +7,12 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.HBox;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
+import java.util.Optional;
 
 public class UsersController {
 
@@ -47,12 +49,17 @@ public class UsersController {
     @FXML
     private TableColumn<UserModel, String> roleColumn;
 
+    @FXML
+    private TableColumn<UserModel, Void> actionsColumn;
+
     private final UserService userService = new UserService();
     private final ObservableList<UserModel> userItems = FXCollections.observableArrayList();
 
     private String currentFullName;
     private String currentRole;
     private String currentBasicAuthToken;
+
+    private Long editingUserId = null;
 
     @FXML
     public void initialize() {
@@ -65,6 +72,8 @@ public class UsersController {
         roleColumn.setCellValueFactory(new PropertyValueFactory<>("role"));
 
         usersTable.setItems(userItems);
+
+        setupActionsColumn();
 
         Tooltip passwordTooltip = new Tooltip(
                 "Password must contain at least 8 characters, uppercase letter, lowercase letter, number, and special character."
@@ -83,6 +92,54 @@ public class UsersController {
         loadUsers();
     }
 
+    private void setupActionsColumn() {
+        actionsColumn.setCellFactory(column -> new TableCell<>() {
+
+            private final Button editButton = new Button("Edit");
+            private final Button resetButton = new Button("Reset Password");
+            private final Button deleteButton = new Button("Delete");
+            private final HBox actionsBox = new HBox(8, editButton, resetButton, deleteButton);
+
+            {
+                actionsBox.setStyle("-fx-alignment: center-left;");
+
+                editButton.setPrefWidth(75);
+                resetButton.setPrefWidth(145);
+                deleteButton.setPrefWidth(85);
+
+                editButton.getStyleClass().add("table-action-button");
+                resetButton.getStyleClass().add("table-action-button");
+                deleteButton.getStyleClass().add("table-danger-button");
+
+                editButton.setOnAction(event -> {
+                    UserModel user = getTableView().getItems().get(getIndex());
+                    editUser(user);
+                });
+
+                resetButton.setOnAction(event -> {
+                    UserModel user = getTableView().getItems().get(getIndex());
+                    resetPassword(user);
+                });
+
+                deleteButton.setOnAction(event -> {
+                    UserModel user = getTableView().getItems().get(getIndex());
+                    deleteUser(user);
+                });
+            }
+
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    setGraphic(actionsBox);
+                }
+            }
+        });
+    }
+
     @FXML
     protected void onCreateUserClick() {
         String fullName = fullNameField.getText();
@@ -91,6 +148,11 @@ public class UsersController {
         String role = roleComboBox.getValue();
 
         clearStatus();
+
+        if (editingUserId != null) {
+            showError("You are editing a user. Click Clear Form before creating a new user.");
+            return;
+        }
 
         if (isBlank(fullName) || isBlank(email) || isBlank(password) || isBlank(role)) {
             showError("Please fill all fields");
@@ -115,7 +177,7 @@ public class UsersController {
             return;
         }
 
-        if (isEmailAlreadyUsed(email)) {
+        if (isEmailAlreadyUsed(email, null)) {
             showError("This email is already registered");
             return;
         }
@@ -131,16 +193,156 @@ public class UsersController {
         }
     }
 
+    private void editUser(UserModel selectedUser) {
+        clearStatus();
+
+        if (selectedUser == null) {
+            showError("Please select a user to edit");
+            return;
+        }
+
+        editingUserId = selectedUser.getId();
+
+        fullNameField.setText(selectedUser.getFullName());
+        emailField.setText(selectedUser.getEmail());
+        roleComboBox.setValue(selectedUser.getRole());
+
+        passwordField.clear();
+        passwordField.setDisable(true);
+        passwordField.setPromptText("Use Reset Password to change password");
+
+        showSuccess("Editing user: " + selectedUser.getFullName());
+    }
+
+    @FXML
+    protected void onUpdateUserClick() {
+        clearStatus();
+
+        if (editingUserId == null) {
+            showError("Please click Edit on a user row first");
+            return;
+        }
+        passwordField.clear();
+
+        String fullName = fullNameField.getText();
+        String email = emailField.getText();
+        String role = roleComboBox.getValue();
+
+        if (isBlank(fullName) || isBlank(email) || isBlank(role)) {
+            showError("Please fill full name, email, and role");
+            return;
+        }
+
+        fullName = fullName.trim();
+        email = email.trim();
+
+        if (fullName.length() < 3) {
+            showError("Full name must be at least 3 characters");
+            return;
+        }
+
+        if (!isValidEmail(email)) {
+            showError("Please enter a valid email address");
+            return;
+        }
+
+        if (isEmailAlreadyUsed(email, editingUserId)) {
+            showError("This email is already registered");
+            return;
+        }
+
+        boolean updated = userService.updateUser(currentBasicAuthToken, editingUserId, fullName, email, role);
+
+        if (updated) {
+            showSuccess("User updated successfully");
+            clearForm();
+            loadUsers();
+        } else {
+            showError("Failed to update user");
+        }
+    }
+
+    @FXML
+    protected void onClearFormClick() {
+        clearForm();
+        showSuccess("Form cleared");
+    }
+
     @FXML
     protected void onRefreshClick() {
         loadUsers();
         showSuccess("Users list refreshed");
     }
 
-    @FXML
-    protected void onDeleteSelectedUserClick() {
-        UserModel selectedUser = usersTable.getSelectionModel().getSelectedItem();
+    private void resetPassword(UserModel selectedUser) {
+        clearStatus();
 
+        if (selectedUser == null) {
+            showError("Please select a user to reset password");
+            return;
+        }
+
+        PasswordField newPasswordField = new PasswordField();
+        newPasswordField.setPromptText("New password");
+
+        PasswordField confirmPasswordField = new PasswordField();
+        confirmPasswordField.setPromptText("Confirm new password");
+
+        Label hintLabel = new Label(
+                "Password must contain at least 8 characters, uppercase, lowercase, number, and special character."
+        );
+        hintLabel.setWrapText(true);
+
+        javafx.scene.layout.VBox content = new javafx.scene.layout.VBox(10);
+        content.getChildren().addAll(
+                new Label("User: " + selectedUser.getFullName()),
+                new Label("Email: " + selectedUser.getEmail()),
+                newPasswordField,
+                confirmPasswordField,
+                hintLabel
+        );
+
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle("Reset Password");
+        dialog.setHeaderText("Reset password for selected user");
+        dialog.getDialogPane().setContent(content);
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+
+        Optional<ButtonType> result = dialog.showAndWait();
+
+        if (result.isEmpty() || result.get() != ButtonType.OK) {
+            showError("Reset password cancelled");
+            return;
+        }
+
+        String newPassword = newPasswordField.getText();
+        String confirmPassword = confirmPasswordField.getText();
+
+        if (isBlank(newPassword) || isBlank(confirmPassword)) {
+            showError("Please enter and confirm the new password");
+            return;
+        }
+
+        if (!newPassword.equals(confirmPassword)) {
+            showError("Passwords do not match");
+            return;
+        }
+
+        if (!isStrongPassword(newPassword)) {
+            showError("Password is not strong enough");
+            return;
+        }
+
+        boolean updated = userService.resetPassword(currentBasicAuthToken, selectedUser.getId(), newPassword);
+
+        if (updated) {
+            showSuccess("Password reset successfully");
+        } else {
+            showError("Failed to reset password");
+        }
+    }
+
+    private void deleteUser(UserModel selectedUser) {
         clearStatus();
 
         if (selectedUser == null) {
@@ -177,6 +379,7 @@ public class UsersController {
 
         if (deleted) {
             showSuccess("User deleted successfully");
+            clearForm();
             loadUsers();
         } else {
             showError("Failed to delete user. You cannot delete the last admin.");
@@ -195,15 +398,26 @@ public class UsersController {
     }
 
     private void clearForm() {
+        editingUserId = null;
+
         fullNameField.clear();
         emailField.clear();
         passwordField.clear();
+
+        passwordField.setDisable(false);
+        passwordField.setPromptText("Password for new user only");
+
         roleComboBox.setValue("SECRETARY");
+        usersTable.getSelectionModel().clearSelection();
     }
 
-    private boolean isEmailAlreadyUsed(String email) {
+    private boolean isEmailAlreadyUsed(String email, Long currentUserId) {
         return userItems.stream()
-                .anyMatch(user -> user.getEmail() != null && user.getEmail().equalsIgnoreCase(email));
+                .anyMatch(user ->
+                        user.getEmail() != null
+                                && user.getEmail().equalsIgnoreCase(email)
+                                && (currentUserId == null || !user.getId().equals(currentUserId))
+                );
     }
 
     private boolean isStrongPassword(String password) {
