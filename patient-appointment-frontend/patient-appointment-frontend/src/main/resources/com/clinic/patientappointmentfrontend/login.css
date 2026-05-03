@@ -481,3 +481,10 @@
 .password-label-strong {
     -fx-text-fill: #1f7a42;
 }
+.role-info-label {
+    -fx-font-size: 12px;
+    -fx-text-fill: #5f6f86;
+    -fx-background-color: rgba(47, 111, 237, 0.08);
+    -fx-background-radius: 10;
+    -fx-padding: 8 10;
+}

@@ -74,7 +74,7 @@ public class LoginController {
 
     @FXML
     public void initialize() {
-        roleComboBox.getItems().setAll("ADMIN", "SECRETARY");
+
 
         Tooltip passwordTooltip = new Tooltip(
                 "Password must contain at least 8 characters, uppercase letter, lowercase letter, number, and special character."
@@ -132,15 +132,14 @@ public class LoginController {
         String email = registerEmailField.getText();
         String password = registerPasswordField.getText();
         String confirmPassword = confirmPasswordField.getText();
-        String role = roleComboBox.getValue();
+        String role = "SECRETARY";
 
         clearStatus(registerStatusLabel);
 
         if (fullName == null || fullName.isBlank()
                 || email == null || email.isBlank()
                 || password == null || password.isBlank()
-                || confirmPassword == null || confirmPassword.isBlank()
-                || role == null || role.isBlank()) {
+                || confirmPassword == null || confirmPassword.isBlank()) {
             showError(registerStatusLabel, "Please fill in all fields");
             return;
         }
@@ -281,7 +280,6 @@ public class LoginController {
         registerEmailField.clear();
         registerPasswordField.clear();
         confirmPasswordField.clear();
-        roleComboBox.setValue(null);
         updatePasswordStrength("");
         clearStatus(registerStatusLabel);
     }

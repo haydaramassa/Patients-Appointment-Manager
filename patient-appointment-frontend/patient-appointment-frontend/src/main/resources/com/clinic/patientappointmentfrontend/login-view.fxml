@@ -137,11 +137,11 @@
                                text="Password strength"
                                styleClass="password-hint"/>
 
-                        <ComboBox fx:id="roleComboBox"
-                                  promptText="Select role"
-                                  maxWidth="320"
-                                  prefWidth="320"
-                                  styleClass="input-field"/>
+                        <Label text="New accounts are created as SECRETARY accounts."
+                               maxWidth="320"
+                               prefWidth="320"
+                               wrapText="true"
+                               styleClass="role-info-label"/>
 
                         <Button text="Register"
                                 maxWidth="320"
