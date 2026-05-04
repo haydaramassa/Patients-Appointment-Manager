@@ -5,6 +5,7 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextArea?>
@@ -43,157 +44,164 @@
     </top>
 
     <center>
-        <VBox spacing="18"
-              styleClass="content-area">
+        <ScrollPane fitToWidth="true"
+                    fitToHeight="true"
+                    pannable="true"
+                    styleClass="page-scroll">
 
-            <padding>
-                <Insets top="22" right="22" bottom="22" left="22"/>
-            </padding>
+            <content>
+                <VBox spacing="18"
+                      minWidth="1150"
+                      styleClass="content-area">
 
-            <VBox spacing="14"
-                  styleClass="form-card">
+                    <padding>
+                        <Insets top="22" right="22" bottom="22" left="22"/>
+                    </padding>
 
-                <Label text="Patient Form"
-                       styleClass="section-title"/>
+                    <VBox spacing="14"
+                          styleClass="form-card">
 
-                <HBox spacing="12"
-                      alignment="CENTER_LEFT">
+                        <Label text="Patient Form"
+                               styleClass="section-title"/>
 
-                    <TextField fx:id="firstNameField"
-                               promptText="First Name"
-                               prefWidth="200"
-                               styleClass="input-field"/>
+                        <HBox spacing="12"
+                              alignment="CENTER_LEFT">
 
-                    <TextField fx:id="lastNameField"
-                               promptText="Last Name"
-                               prefWidth="200"
-                               styleClass="input-field"/>
+                            <TextField fx:id="firstNameField"
+                                       promptText="First Name"
+                                       prefWidth="200"
+                                       styleClass="input-field"/>
 
-                    <TextField fx:id="phoneField"
-                               promptText="Phone"
-                               prefWidth="190"
-                               styleClass="input-field"/>
+                            <TextField fx:id="lastNameField"
+                                       promptText="Last Name"
+                                       prefWidth="200"
+                                       styleClass="input-field"/>
 
-                    <TextField fx:id="emailField"
-                               promptText="Email"
-                               prefWidth="260"
-                               styleClass="input-field"/>
+                            <TextField fx:id="phoneField"
+                                       promptText="Phone"
+                                       prefWidth="190"
+                                       styleClass="input-field"/>
 
-                    <ComboBox fx:id="genderComboBox"
-                              promptText="Gender"
-                              prefWidth="150"
-                              styleClass="input-field"/>
+                            <TextField fx:id="emailField"
+                                       promptText="Email"
+                                       prefWidth="260"
+                                       styleClass="input-field"/>
 
-                    <DatePicker fx:id="birthDatePicker"
-                                promptText="Birth Date"
-                                prefWidth="170"
-                                styleClass="input-field"/>
-                </HBox>
+                            <ComboBox fx:id="genderComboBox"
+                                      promptText="Gender"
+                                      prefWidth="150"
+                                      styleClass="input-field"/>
 
-                <HBox spacing="12"
-                      alignment="CENTER_LEFT">
+                            <DatePicker fx:id="birthDatePicker"
+                                        promptText="Birth Date"
+                                        prefWidth="170"
+                                        styleClass="input-field"/>
+                        </HBox>
 
-                    <TextField fx:id="addressField"
-                               promptText="Address"
-                               prefWidth="420"
-                               styleClass="input-field"/>
+                        <HBox spacing="12"
+                              alignment="CENTER_LEFT">
 
-                    <TextArea fx:id="notesField"
-                              promptText="Notes"
-                              prefWidth="420"
-                              prefHeight="42"
-                              styleClass="input-field"/>
+                            <TextField fx:id="addressField"
+                                       promptText="Address"
+                                       prefWidth="420"
+                                       styleClass="input-field"/>
 
-                    <Button text="Create Patient"
-                            onAction="#onCreatePatientClick"
-                            prefWidth="190"
-                            styleClass="login-button"/>
+                            <TextArea fx:id="notesField"
+                                      promptText="Notes"
+                                      prefWidth="420"
+                                      prefHeight="42"
+                                      styleClass="input-field"/>
 
-                    <Button text="Update Patient"
-                            onAction="#onUpdatePatientClick"
-                            prefWidth="180"
-                            styleClass="toolbar-button"/>
+                            <Button text="Create Patient"
+                                    onAction="#onCreatePatientClick"
+                                    prefWidth="190"
+                                    styleClass="login-button"/>
 
-                    <Button text="Clear Form"
-                            onAction="#onClearFormClick"
-                            prefWidth="150"
-                            styleClass="toolbar-button"/>
-                </HBox>
+                            <Button text="Update Patient"
+                                    onAction="#onUpdatePatientClick"
+                                    prefWidth="180"
+                                    styleClass="toolbar-button"/>
 
-                <Label fx:id="statusLabel"
-                       text="Ready"
-                       wrapText="true"
-                       styleClass="status-label"/>
-            </VBox>
+                            <Button text="Clear Form"
+                                    onAction="#onClearFormClick"
+                                    prefWidth="150"
+                                    styleClass="toolbar-button"/>
+                        </HBox>
 
-            <HBox spacing="10"
-                  alignment="CENTER_LEFT">
+                        <Label fx:id="statusLabel"
+                               text="Ready"
+                               wrapText="true"
+                               styleClass="status-label"/>
+                    </VBox>
 
-                <TextField fx:id="searchField"
-                           promptText="Search by name, phone, email, address, or notes"
-                           prefWidth="430"
-                           styleClass="input-field"/>
+                    <HBox spacing="10"
+                          alignment="CENTER_LEFT">
 
-                <Button text="Search"
-                        onAction="#onSearchClick"
-                        styleClass="toolbar-button"/>
+                        <TextField fx:id="searchField"
+                                   promptText="Search by name, phone, email, address, or notes"
+                                   prefWidth="430"
+                                   styleClass="input-field"/>
 
-                <Button text="Refresh"
-                        onAction="#onRefreshClick"
-                        styleClass="toolbar-button"/>
+                        <Button text="Search"
+                                onAction="#onSearchClick"
+                                styleClass="toolbar-button"/>
 
-                <Label text="Use row buttons to edit or delete patients."
-                       styleClass="table-tip-label"/>
-            </HBox>
+                        <Button text="Refresh"
+                                onAction="#onRefreshClick"
+                                styleClass="toolbar-button"/>
 
-            <TableView fx:id="patientsTable"
-                       VBox.vgrow="ALWAYS"
-                       styleClass="data-table">
+                        <Label text="Use row buttons to edit or delete patients."
+                               styleClass="table-tip-label"/>
+                    </HBox>
 
-                <columns>
-                    <TableColumn fx:id="idColumn"
-                                 text="ID"
-                                 prefWidth="60"/>
+                    <TableView fx:id="patientsTable"
+                               prefHeight="520"
+                               VBox.vgrow="ALWAYS"
+                               styleClass="data-table">
 
-                    <TableColumn fx:id="firstNameColumn"
-                                 text="First Name"
-                                 prefWidth="130"/>
+                        <columns>
 
-                    <TableColumn fx:id="lastNameColumn"
-                                 text="Last Name"
-                                 prefWidth="130"/>
+                            <TableColumn fx:id="firstNameColumn"
+                                         text="First Name"
+                                         prefWidth="130"/>
 
-                    <TableColumn fx:id="phoneColumn"
-                                 text="Phone"
-                                 prefWidth="135"/>
+                            <TableColumn fx:id="lastNameColumn"
+                                         text="Last Name"
+                                         prefWidth="130"/>
 
-                    <TableColumn fx:id="emailColumn"
-                                 text="Email"
-                                 prefWidth="220"/>
+                            <TableColumn fx:id="phoneColumn"
+                                         text="Phone"
+                                         prefWidth="135"/>
 
-                    <TableColumn fx:id="genderColumn"
-                                 text="Gender"
-                                 prefWidth="95"/>
+                            <TableColumn fx:id="emailColumn"
+                                         text="Email"
+                                         prefWidth="220"/>
 
-                    <TableColumn fx:id="birthDateColumn"
-                                 text="Birth Date"
-                                 prefWidth="120"/>
+                            <TableColumn fx:id="genderColumn"
+                                         text="Gender"
+                                         prefWidth="95"/>
 
-                    <TableColumn fx:id="addressColumn"
-                                 text="Address"
-                                 prefWidth="240"/>
+                            <TableColumn fx:id="birthDateColumn"
+                                         text="Birth Date"
+                                         prefWidth="120"/>
 
-                    <TableColumn fx:id="notesColumn"
-                                 text="Notes"
-                                 prefWidth="260"/>
+                            <TableColumn fx:id="addressColumn"
+                                         text="Address"
+                                         prefWidth="240"/>
 
-                    <TableColumn fx:id="actionsColumn"
-                                 text="Actions"
-                                 prefWidth="190"/>
-                </columns>
+                            <TableColumn fx:id="notesColumn"
+                                         text="Notes"
+                                         prefWidth="240"/>
 
-            </TableView>
-        </VBox>
+                            <TableColumn fx:id="actionsColumn"
+                                         text="Actions"
+                                         prefWidth="190"/>
+                        </columns>
+
+                    </TableView>
+                </VBox>
+            </content>
+        </ScrollPane>
     </center>
 
 </BorderPane>

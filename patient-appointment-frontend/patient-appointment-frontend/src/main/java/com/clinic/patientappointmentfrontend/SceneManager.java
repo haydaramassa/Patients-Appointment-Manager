@@ -23,11 +23,8 @@ public class SceneManager {
                 ClinicApplication.class.getResource("login-view.fxml")
         );
 
-        Scene scene = createScene(loader.load(), DEFAULT_WIDTH, DEFAULT_HEIGHT);
-
-        primaryStage.setScene(scene);
-        primaryStage.setTitle("Patient Appointment Manager - Login");
-        primaryStage.show();
+        Parent root = loader.load();
+        showRoot(root, DEFAULT_WIDTH, DEFAULT_HEIGHT, "Patient Appointment Manager - Login");
     }
 
     public static void loadDashboardScene(String fullName, String role, String basicAuthToken) throws Exception {
@@ -35,7 +32,7 @@ public class SceneManager {
                 ClinicApplication.class.getResource("dashboard-view.fxml")
         );
 
-        Scene scene = createScene(loader.load(), DEFAULT_WIDTH, DEFAULT_HEIGHT);
+        Parent root = loader.load();
 
         DashboardController controller = loader.getController();
         controller.setUserData(fullName, role, basicAuthToken);
@@ -52,9 +49,7 @@ public class SceneManager {
             );
         }
 
-        primaryStage.setScene(scene);
-        primaryStage.setTitle("Patient Appointment Manager - Dashboard");
-        primaryStage.show();
+        showRoot(root, DEFAULT_WIDTH, DEFAULT_HEIGHT, "Patient Appointment Manager - Dashboard");
     }
 
     public static void loadPatientsScene(String fullName, String role, String basicAuthToken) throws Exception {
@@ -62,14 +57,12 @@ public class SceneManager {
                 ClinicApplication.class.getResource("patients-view.fxml")
         );
 
-        Scene scene = createScene(loader.load(), 1100, 650);
+        Parent root = loader.load();
 
         PatientsController controller = loader.getController();
         controller.setUserData(fullName, role, basicAuthToken);
 
-        primaryStage.setScene(scene);
-        primaryStage.setTitle("Patient Appointment Manager - Patients");
-        primaryStage.show();
+        showRoot(root, 1100, 650, "Patient Appointment Manager - Patients");
     }
 
     public static void loadAppointmentsScene(String fullName, String role, String basicAuthToken) throws Exception {
@@ -77,14 +70,12 @@ public class SceneManager {
                 ClinicApplication.class.getResource("appointments-view.fxml")
         );
 
-        Scene scene = createScene(loader.load(), 1150, 650);
+        Parent root = loader.load();
 
         AppointmentsController controller = loader.getController();
         controller.setUserData(fullName, role, basicAuthToken);
 
-        primaryStage.setScene(scene);
-        primaryStage.setTitle("Patient Appointment Manager - Appointments");
-        primaryStage.show();
+        showRoot(root, 1150, 650, "Patient Appointment Manager - Appointments");
     }
 
     public static void loadUsersScene(String fullName, String role, String basicAuthToken) throws Exception {
@@ -92,78 +83,45 @@ public class SceneManager {
                 ClinicApplication.class.getResource("users-view.fxml")
         );
 
-        Scene scene = createScene(loader.load(), 1200, 700);
+        Parent root = loader.load();
 
         UsersController controller = loader.getController();
         controller.setUserData(fullName, role, basicAuthToken);
 
-        primaryStage.setScene(scene);
-        primaryStage.setTitle("Patient Appointment Manager - Users");
-        primaryStage.show();
+        showRoot(root, 1200, 700, "Patient Appointment Manager - Users");
     }
 
-    private static Scene createScene(Parent root, double defaultWidth, double defaultHeight) {
-        WindowState windowState = captureWindowState();
+    private static void showRoot(Parent root, double defaultWidth, double defaultHeight, String title) {
+        boolean wasMaximized = primaryStage.isMaximized();
 
-        double width = windowState.width() > 0 ? windowState.width() : defaultWidth;
-        double height = windowState.height() > 0 ? windowState.height() : defaultHeight;
+        double currentX = primaryStage.getX();
+        double currentY = primaryStage.getY();
+        double currentWidth = primaryStage.getWidth() > 0 ? primaryStage.getWidth() : defaultWidth;
+        double currentHeight = primaryStage.getHeight() > 0 ? primaryStage.getHeight() : defaultHeight;
 
-        Scene scene = new Scene(root, width, height);
-        scene.getStylesheets().add(
-                ClinicApplication.class.getResource("login.css").toExternalForm()
-        );
+        Scene currentScene = primaryStage.getScene();
 
-        applyWindowState(windowState);
+        if (currentScene == null) {
+            Scene scene = new Scene(root, defaultWidth, defaultHeight);
+            scene.getStylesheets().add(
+                    ClinicApplication.class.getResource("login.css").toExternalForm()
+            );
 
-        return scene;
-    }
-
-    private static WindowState captureWindowState() {
-        if (primaryStage == null || primaryStage.getScene() == null) {
-            return new WindowState(0, 0, 0, 0, false);
+            primaryStage.setScene(scene);
+        } else {
+            currentScene.setRoot(root);
         }
 
-        return new WindowState(
-                primaryStage.getX(),
-                primaryStage.getY(),
-                primaryStage.getWidth(),
-                primaryStage.getHeight(),
-                primaryStage.isMaximized()
-        );
-    }
+        primaryStage.setTitle(title);
 
-    private static void applyWindowState(WindowState windowState) {
-        if (primaryStage == null) {
-            return;
+        primaryStage.setX(currentX);
+        primaryStage.setY(currentY);
+        primaryStage.setWidth(currentWidth);
+        primaryStage.setHeight(currentHeight);
+        primaryStage.setMaximized(wasMaximized);
+
+        if (!primaryStage.isShowing()) {
+            primaryStage.show();
         }
-
-        primaryStage.setMaximized(false);
-
-        if (windowState.x() > 0) {
-            primaryStage.setX(windowState.x());
-        }
-
-        if (windowState.y() > 0) {
-            primaryStage.setY(windowState.y());
-        }
-
-        if (windowState.width() > 0) {
-            primaryStage.setWidth(windowState.width());
-        }
-
-        if (windowState.height() > 0) {
-            primaryStage.setHeight(windowState.height());
-        }
-
-        primaryStage.setMaximized(windowState.maximized());
-    }
-
-    private record WindowState(
-            double x,
-            double y,
-            double width,
-            double height,
-            boolean maximized
-    ) {
     }
 }

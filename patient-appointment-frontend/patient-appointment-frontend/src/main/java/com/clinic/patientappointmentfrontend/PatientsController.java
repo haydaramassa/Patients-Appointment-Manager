@@ -52,9 +52,6 @@ public class PatientsController {
     private TableView<PatientModel> patientsTable;
 
     @FXML
-    private TableColumn<PatientModel, Long> idColumn;
-
-    @FXML
     private TableColumn<PatientModel, String> firstNameColumn;
 
     @FXML
@@ -96,8 +93,6 @@ public class PatientsController {
         genderComboBox.setValue("MALE");
 
         disableFutureBirthDates();
-
-        idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
         firstNameColumn.setCellValueFactory(new PropertyValueFactory<>("firstName"));
         lastNameColumn.setCellValueFactory(new PropertyValueFactory<>("lastName"));
         phoneColumn.setCellValueFactory(new PropertyValueFactory<>("phone"));

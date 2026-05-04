@@ -2,9 +2,13 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
@@ -17,38 +21,165 @@
             styleClass="dashboard-root">
 
     <top>
-        <HBox alignment="CENTER_LEFT" spacing="12" styleClass="top-bar">
+        <HBox alignment="CENTER_LEFT"
+              spacing="20"
+              styleClass="top-bar">
+
             <padding>
-                <Insets top="15" right="20" bottom="15" left="20"/>
+                <Insets top="18" right="22" bottom="18" left="22"/>
             </padding>
 
-            <Label fx:id="pageTitleLabel" text="Appointments" styleClass="top-title"/>
+            <Label fx:id="pageTitleLabel"
+                   text="Appointments"
+                   styleClass="page-title"/>
+
             <Region HBox.hgrow="ALWAYS"/>
-            <Button text="Back to Dashboard" onAction="#onBackClick" styleClass="login-button"/>
+
+            <Button text="Back to Dashboard"
+                    onAction="#onBackClick"
+                    prefWidth="260"
+                    minHeight="46"
+                    styleClass="back-button"/>
         </HBox>
     </top>
 
     <center>
-        <VBox spacing="18">
-            <padding>
-                <Insets top="20" right="20" bottom="20" left="20"/>
-            </padding>
+        <ScrollPane fitToWidth="true"
+                    fitToHeight="true"
+                    pannable="true"
+                    styleClass="page-scroll">
 
-            <HBox spacing="10">
-                <TextField fx:id="searchField" promptText="Search by patient, doctor, or status" prefWidth="320" styleClass="input-field"/>
-                <Button text="Search" onAction="#onSearchClick" styleClass="login-button"/>
-                <Button text="Refresh" onAction="#onRefreshClick" styleClass="toolbar-button"/>            </HBox>
+            <content>
+                <VBox spacing="18"
+                      minWidth="1150"
+                      styleClass="content-area">
 
-            <TableView fx:id="appointmentsTable" prefHeight="500">
-                <columns>
-                    <TableColumn fx:id="idColumn" text="ID" prefWidth="70"/>
-                    <TableColumn fx:id="patientNameColumn" text="Patient" prefWidth="200"/>
-                    <TableColumn fx:id="dateTimeColumn" text="Appointment DateTime" prefWidth="240"/>
-                    <TableColumn fx:id="statusColumn" text="Status" prefWidth="140"/>
-                    <TableColumn fx:id="doctorNameColumn" text="Doctor" prefWidth="180"/>
-                </columns>
-            </TableView>
-        </VBox>
+                    <padding>
+                        <Insets top="22" right="22" bottom="22" left="22"/>
+                    </padding>
+
+                    <VBox spacing="14"
+                          styleClass="form-card">
+
+                        <Label text="Appointment Form"
+                               styleClass="section-title"/>
+
+                        <HBox spacing="12"
+                              alignment="CENTER_LEFT">
+
+                            <ComboBox fx:id="patientComboBox"
+                                      promptText="Select Patient"
+                                      prefWidth="280"
+                                      styleClass="input-field"/>
+
+                            <DatePicker fx:id="appointmentDatePicker"
+                                        promptText="Appointment Date"
+                                        prefWidth="190"
+                                        styleClass="input-field"/>
+
+                            <TextField fx:id="appointmentTimeField"
+                                       promptText="Time HH:mm"
+                                       prefWidth="140"
+                                       styleClass="input-field"/>
+
+                            <TextField fx:id="doctorNameField"
+                                       promptText="Doctor Name"
+                                       prefWidth="220"
+                                       styleClass="input-field"/>
+
+                            <ComboBox fx:id="statusComboBox"
+                                      promptText="Status"
+                                      prefWidth="170"
+                                      styleClass="input-field"/>
+                        </HBox>
+
+                        <HBox spacing="12"
+                              alignment="CENTER_LEFT">
+
+                            <TextArea fx:id="notesField"
+                                      promptText="Notes"
+                                      prefWidth="520"
+                                      prefHeight="42"
+                                      styleClass="input-field"/>
+
+                            <Button text="Create Appointment"
+                                    onAction="#onCreateAppointmentClick"
+                                    prefWidth="210"
+                                    styleClass="login-button"/>
+
+                            <Button text="Update Appointment"
+                                    onAction="#onUpdateAppointmentClick"
+                                    prefWidth="200"
+                                    styleClass="toolbar-button"/>
+
+                            <Button text="Clear Form"
+                                    onAction="#onClearFormClick"
+                                    prefWidth="150"
+                                    styleClass="toolbar-button"/>
+                        </HBox>
+
+                        <Label fx:id="statusLabel"
+                               text="Ready"
+                               wrapText="true"
+                               styleClass="status-label"/>
+                    </VBox>
+
+                    <HBox spacing="10"
+                          alignment="CENTER_LEFT">
+
+                        <TextField fx:id="searchField"
+                                   promptText="Search by patient, doctor, status, date, or notes"
+                                   prefWidth="430"
+                                   styleClass="input-field"/>
+
+                        <Button text="Search"
+                                onAction="#onSearchClick"
+                                styleClass="toolbar-button"/>
+
+                        <Button text="Refresh"
+                                onAction="#onRefreshClick"
+                                styleClass="toolbar-button"/>
+
+                        <Label text="Use row buttons to edit or delete appointments."
+                               styleClass="table-tip-label"/>
+                    </HBox>
+
+                    <TableView fx:id="appointmentsTable"
+                               prefHeight="520"
+                               VBox.vgrow="ALWAYS"
+                               styleClass="data-table">
+
+                        <columns>
+
+                            <TableColumn fx:id="patientNameColumn"
+                                         text="Patient"
+                                         prefWidth="210"/>
+
+                            <TableColumn fx:id="dateTimeColumn"
+                                         text="Appointment DateTime"
+                                         prefWidth="210"/>
+
+                            <TableColumn fx:id="statusColumn"
+                                         text="Status"
+                                         prefWidth="130"/>
+
+                            <TableColumn fx:id="doctorNameColumn"
+                                         text="Doctor"
+                                         prefWidth="190"/>
+
+                            <TableColumn fx:id="notesColumn"
+                                         text="Notes"
+                                         prefWidth="280"/>
+
+                            <TableColumn fx:id="actionsColumn"
+                                         text="Actions"
+                                         prefWidth="190"/>
+                        </columns>
+                    </TableView>
+
+                </VBox>
+            </content>
+        </ScrollPane>
     </center>
 
 </BorderPane>

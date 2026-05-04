@@ -38,9 +38,6 @@ public class UsersController {
     private TableView<UserModel> usersTable;
 
     @FXML
-    private TableColumn<UserModel, Long> idColumn;
-
-    @FXML
     private TableColumn<UserModel, String> fullNameColumn;
 
     @FXML
@@ -66,7 +63,6 @@ public class UsersController {
         roleComboBox.setItems(FXCollections.observableArrayList("ADMIN", "SECRETARY"));
         roleComboBox.setValue("SECRETARY");
 
-        idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
         fullNameColumn.setCellValueFactory(new PropertyValueFactory<>("fullName"));
         emailColumn.setCellValueFactory(new PropertyValueFactory<>("email"));
         roleColumn.setCellValueFactory(new PropertyValueFactory<>("role"));

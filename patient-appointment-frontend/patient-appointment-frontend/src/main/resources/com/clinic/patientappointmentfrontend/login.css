@@ -492,3 +492,27 @@
 .table-danger-button:hover {
     -fx-background-color: #c0392b;
 }
+.page-scroll {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+}
+
+.page-scroll > .viewport {
+    -fx-background-color: transparent;
+}
+
+.page-scroll .scroll-bar:vertical,
+.page-scroll .scroll-bar:horizontal {
+    -fx-background-color: transparent;
+}
+
+.page-scroll .scroll-bar:vertical .thumb,
+.page-scroll .scroll-bar:horizontal .thumb {
+    -fx-background-color: #c4d0dd;
+    -fx-background-radius: 10;
+}
+
+.page-scroll .scroll-bar:vertical .thumb:hover,
+.page-scroll .scroll-bar:horizontal .thumb:hover {
+    -fx-background-color: #aebccd;
+}

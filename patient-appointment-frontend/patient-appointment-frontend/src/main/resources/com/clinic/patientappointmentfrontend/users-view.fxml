@@ -121,9 +121,6 @@
                        styleClass="data-table">
 
                 <columns>
-                    <TableColumn fx:id="idColumn"
-                                 text="ID"
-                                 prefWidth="70"/>
 
                     <TableColumn fx:id="fullNameColumn"
                                  text="Full Name"
