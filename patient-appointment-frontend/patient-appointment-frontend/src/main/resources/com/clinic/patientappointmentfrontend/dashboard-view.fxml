@@ -8,6 +8,7 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.shape.Circle?>
 
 <BorderPane xmlns="http://javafx.com/javafx/25"
             xmlns:fx="http://javafx.com/fxml/1"
@@ -15,18 +16,49 @@
             styleClass="dashboard-root">
 
     <left>
-        <VBox prefWidth="220" spacing="18" styleClass="sidebar">
+        <VBox prefWidth="240" spacing="18" styleClass="sidebar">
             <padding>
                 <Insets top="25" right="20" bottom="25" left="20"/>
             </padding>
 
-            <Label text="Clinic Panel" styleClass="sidebar-title"/>
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Circle radius="18" styleClass="clinic-logo-circle"/>
+                <VBox spacing="2">
+                    <Label fx:id="clinicNameSidebarLabel"
+                           text="Clinic"
+                           wrapText="true"
+                           styleClass="sidebar-title"/>
 
-            <Button text="Dashboard" styleClass="sidebar-button"/>
-            <Button text="Patients" onAction="#onPatientsClick" styleClass="sidebar-button"/>
-            <Button text="Appointments" onAction="#onAppointmentsClick" styleClass="sidebar-button"/>
-            <Button text="Users" fx:id="usersButton" onAction="#onUsersClick" styleClass="sidebar-button"/>
-            <Button text="Logout" onAction="#onLogoutClick" styleClass="sidebar-logout-button"/>
+                    <Label text="Management System"
+                           styleClass="sidebar-subtitle"/>
+                </VBox>
+            </HBox>
+
+            <Button text="Dashboard"
+                    styleClass="sidebar-button"/>
+
+            <Button text="Patients"
+                    onAction="#onPatientsClick"
+                    styleClass="sidebar-button"/>
+
+            <Button text="Appointments"
+                    onAction="#onAppointmentsClick"
+                    styleClass="sidebar-button"/>
+
+            <Button text="Users"
+                    fx:id="usersButton"
+                    onAction="#onUsersClick"
+                    styleClass="sidebar-button"/>
+
+            <Button text="Clinic Info"
+                    onAction="#onClinicInfoClick"
+                    styleClass="sidebar-button"/>
+
+            <Region VBox.vgrow="ALWAYS"/>
+
+            <Button text="Logout"
+                    onAction="#onLogoutClick"
+                    styleClass="sidebar-logout-button"/>
         </VBox>
     </left>
 
@@ -37,13 +69,20 @@
             </padding>
 
             <VBox spacing="4">
-                <Label text="Dashboard" styleClass="top-title"/>
-                <Label fx:id="roleLabel" text="Role" styleClass="top-subtitle"/>
+                <Label fx:id="dashboardTitleLabel"
+                       text="Dashboard"
+                       styleClass="top-title"/>
+
+                <Label fx:id="roleLabel"
+                       text="Role"
+                       styleClass="top-subtitle"/>
             </VBox>
 
             <Region HBox.hgrow="ALWAYS"/>
 
-            <Label fx:id="welcomeLabel" text="Welcome" styleClass="welcome-label"/>
+            <Label fx:id="welcomeLabel"
+                   text="Welcome"
+                   styleClass="welcome-label"/>
         </HBox>
     </top>
 
@@ -53,7 +92,15 @@
                 <Insets top="25" right="25" bottom="25" left="25"/>
             </padding>
 
-            <Label text="Overview" styleClass="section-title"/>
+            <VBox spacing="6">
+                <Label fx:id="clinicNameMainLabel"
+                       text="Clinic Name"
+                       styleClass="dashboard-title"/>
+
+                <Label fx:id="clinicSubtitleLabel"
+                       text="Clinic Management System"
+                       styleClass="dashboard-subtitle"/>
+            </VBox>
 
             <GridPane hgap="18" vgap="18">
                 <VBox GridPane.rowIndex="0" GridPane.columnIndex="0" styleClass="stat-card">
@@ -77,12 +124,34 @@
                 </VBox>
             </GridPane>
 
-            <VBox spacing="10" styleClass="content-card">
-                <Label text="Quick Summary" styleClass="section-title"/>
-                <Label text="This dashboard will display clinic statistics, patients, appointments, and role-based navigation."
-                       wrapText="true"
-                       styleClass="card-text"/>
-            </VBox>
+            <HBox spacing="18">
+                <VBox spacing="10" styleClass="content-card" prefWidth="520">
+                    <Label text="Quick Summary" styleClass="section-title"/>
+
+                    <Label text="Manage patients, appointments, users, and daily clinic activity from one organized dashboard."
+                           wrapText="true"
+                           styleClass="card-text"/>
+                </VBox>
+
+                <VBox spacing="10" styleClass="content-card" prefWidth="420">
+                    <Label text="Clinic Information" styleClass="section-title"/>
+
+                    <Label fx:id="clinicPhoneLabel"
+                           text="Phone"
+                           wrapText="true"
+                           styleClass="card-text"/>
+
+                    <Label fx:id="clinicAddressLabel"
+                           text="Address"
+                           wrapText="true"
+                           styleClass="card-text"/>
+
+                    <Label fx:id="clinicHoursLabel"
+                           text="Working hours"
+                           wrapText="true"
+                           styleClass="card-text"/>
+                </VBox>
+            </HBox>
         </VBox>
     </center>
 

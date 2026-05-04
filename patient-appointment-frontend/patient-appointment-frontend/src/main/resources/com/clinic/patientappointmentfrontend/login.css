@@ -516,3 +516,19 @@
 .page-scroll .scroll-bar:horizontal .thumb:hover {
     -fx-background-color: #aebccd;
 }
+.sidebar-subtitle {
+    -fx-font-size: 11px;
+    -fx-text-fill: rgba(255, 255, 255, 0.78);
+}
+
+.clinic-logo-circle {
+    -fx-fill: #2f6fed;
+    -fx-stroke: rgba(255, 255, 255, 0.65);
+    -fx-stroke-width: 2;
+}
+
+.sidebar-title {
+    -fx-font-size: 17px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
