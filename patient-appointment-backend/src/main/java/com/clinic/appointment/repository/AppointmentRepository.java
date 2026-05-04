@@ -11,4 +11,8 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     List<Appointment> findByPatientId(Long patientId);
 
     List<Appointment> findByAppointmentDateTimeBetween(LocalDateTime start, LocalDateTime end);
+
+    boolean existsByAppointmentDateTime(LocalDateTime appointmentDateTime);
+
+    boolean existsByAppointmentDateTimeAndIdNot(LocalDateTime appointmentDateTime, Long id);
 }

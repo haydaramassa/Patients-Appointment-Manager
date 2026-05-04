@@ -14,6 +14,12 @@ import java.util.Scanner;
 
 public class AppointmentService {
 
+    private String lastErrorMessage = "";
+
+    public String getLastErrorMessage() {
+        return lastErrorMessage;
+    }
+
     public List<AppointmentModel> getAllAppointments(String basicAuthToken) {
         try {
             URL url = new URL("http://localhost:8080/api/appointments");
@@ -51,6 +57,8 @@ public class AppointmentService {
                                      String status,
                                      String doctorName,
                                      String notes) {
+        lastErrorMessage = "";
+
         try {
             URL url = new URL("http://localhost:8080/api/appointments");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -68,13 +76,17 @@ public class AppointmentService {
             }
 
             int responseCode = connection.getResponseCode();
+            String responseBody = readResponseBody(connection, responseCode);
 
-            System.out.println("Create appointment response code: " + responseCode);
+            if (responseCode >= 200 && responseCode < 300) {
+                return true;
+            }
 
-            return responseCode >= 200 && responseCode < 300;
+            lastErrorMessage = getReadableError(responseBody);
+            return false;
 
         } catch (IOException e) {
-            System.out.println("Create appointment error: " + e.getMessage());
+            lastErrorMessage = "Cannot connect to backend";
             return false;
         }
     }
@@ -86,6 +98,8 @@ public class AppointmentService {
                                      String status,
                                      String doctorName,
                                      String notes) {
+        lastErrorMessage = "";
+
         try {
             URL url = new URL("http://localhost:8080/api/appointments/" + appointmentId);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -103,18 +117,24 @@ public class AppointmentService {
             }
 
             int responseCode = connection.getResponseCode();
+            String responseBody = readResponseBody(connection, responseCode);
 
-            System.out.println("Update appointment response code: " + responseCode);
+            if (responseCode >= 200 && responseCode < 300) {
+                return true;
+            }
 
-            return responseCode >= 200 && responseCode < 300;
+            lastErrorMessage = getReadableError(responseBody);
+            return false;
 
         } catch (IOException e) {
-            System.out.println("Update appointment error: " + e.getMessage());
+            lastErrorMessage = "Cannot connect to backend";
             return false;
         }
     }
 
     public boolean deleteAppointment(String basicAuthToken, Long appointmentId) {
+        lastErrorMessage = "";
+
         try {
             URL url = new URL("http://localhost:8080/api/appointments/" + appointmentId);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -123,15 +143,68 @@ public class AppointmentService {
             connection.setRequestProperty("Authorization", "Basic " + basicAuthToken);
 
             int responseCode = connection.getResponseCode();
+            String responseBody = readResponseBody(connection, responseCode);
 
-            System.out.println("Delete appointment response code: " + responseCode);
+            if (responseCode >= 200 && responseCode < 300) {
+                return true;
+            }
 
-            return responseCode >= 200 && responseCode < 300;
+            lastErrorMessage = getReadableError(responseBody);
+            return false;
 
         } catch (IOException e) {
-            System.out.println("Delete appointment error: " + e.getMessage());
+            lastErrorMessage = "Cannot connect to backend";
             return false;
         }
+    }
+
+    private String readResponseBody(HttpURLConnection connection, int responseCode) {
+        try {
+            InputStream stream;
+
+            if (responseCode >= 200 && responseCode < 300) {
+                stream = connection.getInputStream();
+            } else {
+                stream = connection.getErrorStream();
+            }
+
+            if (stream == null) {
+                return "";
+            }
+
+            Scanner scanner = new Scanner(stream, StandardCharsets.UTF_8);
+            StringBuilder response = new StringBuilder();
+
+            while (scanner.hasNextLine()) {
+                response.append(scanner.nextLine());
+            }
+
+            scanner.close();
+            return response.toString();
+
+        } catch (IOException e) {
+            return "";
+        }
+    }
+
+    private String getReadableError(String responseBody) {
+        if (responseBody == null || responseBody.isBlank()) {
+            return "Operation failed. Please try again.";
+        }
+
+        if (responseBody.contains("An appointment already exists at this date and time")) {
+            return "This time slot is already booked. Please choose another time.";
+        }
+
+        if (responseBody.contains("Patient not found")) {
+            return "Selected patient was not found.";
+        }
+
+        if (responseBody.contains("Appointment not found")) {
+            return "Appointment was not found.";
+        }
+
+        return "Operation failed. Please check the entered information.";
     }
 
     private String buildAppointmentJson(Long patientId,

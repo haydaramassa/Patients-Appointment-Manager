@@ -77,10 +77,10 @@
                                         prefWidth="190"
                                         styleClass="input-field"/>
 
-                            <TextField fx:id="appointmentTimeField"
-                                       promptText="Time HH:mm"
-                                       prefWidth="140"
-                                       styleClass="input-field"/>
+                            <ComboBox fx:id="appointmentTimeComboBox"
+                                      promptText="Time"
+                                      prefWidth="140"
+                                      styleClass="input-field"/>
 
                             <TextField fx:id="doctorNameField"
                                        promptText="Doctor Name"
@@ -138,6 +138,11 @@
 
                         <Button text="Refresh"
                                 onAction="#onRefreshClick"
+                                styleClass="toolbar-button"/>
+
+                        <Button text="View Day Schedule"
+                                onAction="#onViewDayScheduleClick"
+                                prefWidth="190"
                                 styleClass="toolbar-button"/>
 
                         <Label text="Use row buttons to edit or delete appointments."

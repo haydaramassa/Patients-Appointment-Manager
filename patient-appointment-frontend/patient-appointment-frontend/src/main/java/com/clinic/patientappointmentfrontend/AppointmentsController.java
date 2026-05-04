@@ -7,9 +7,13 @@ import com.clinic.patientappointmentfrontend.service.PatientService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
 import java.time.LocalDate;
@@ -30,7 +34,7 @@ public class AppointmentsController {
     private DatePicker appointmentDatePicker;
 
     @FXML
-    private TextField appointmentTimeField;
+    private ComboBox<String> appointmentTimeComboBox;
 
     @FXML
     private TextField doctorNameField;
@@ -80,13 +84,21 @@ public class AppointmentsController {
 
     private Long editingAppointmentId = null;
 
+    private static final LocalTime WORK_START_TIME = LocalTime.of(8, 0);
+    private static final LocalTime WORK_END_TIME = LocalTime.of(18, 0);
+
     @FXML
     public void initialize() {
         statusComboBox.setItems(FXCollections.observableArrayList("SCHEDULED", "COMPLETED", "CANCELLED"));
         statusComboBox.setValue("SCHEDULED");
 
+        setupTimeComboBox();
         setupPatientComboBox();
         disablePastAppointmentDates();
+
+        appointmentDatePicker.valueProperty().addListener((observable, oldValue, newValue) -> {
+            refreshAvailableTimeSlots();
+        });
 
         patientNameColumn.setCellValueFactory(new PropertyValueFactory<>("patientName"));
         dateTimeColumn.setCellValueFactory(new PropertyValueFactory<>("appointmentDateTime"));
@@ -94,6 +106,7 @@ public class AppointmentsController {
         doctorNameColumn.setCellValueFactory(new PropertyValueFactory<>("doctorName"));
         notesColumn.setCellValueFactory(new PropertyValueFactory<>("notes"));
 
+        setupStatusColumnColors();
         setupLongTextColumn(notesColumn);
         setupActionsColumn();
 
@@ -113,6 +126,51 @@ public class AppointmentsController {
 
         loadPatients();
         loadAppointments();
+    }
+
+    private void setupTimeComboBox() {
+        refreshAvailableTimeSlots();
+    }
+
+    private void refreshAvailableTimeSlots() {
+        String currentSelectedTime = appointmentTimeComboBox.getValue();
+
+        ObservableList<String> availableTimes = FXCollections.observableArrayList();
+
+        LocalTime time = WORK_START_TIME;
+
+        while (!time.isAfter(WORK_END_TIME)) {
+            String timeText = time.toString();
+
+            if (!isTimeBookedForSelectedDate(timeText)) {
+                availableTimes.add(timeText);
+            }
+
+            time = time.plusMinutes(30);
+        }
+
+        appointmentTimeComboBox.setItems(availableTimes);
+
+        if (currentSelectedTime != null && availableTimes.contains(currentSelectedTime)) {
+            appointmentTimeComboBox.setValue(currentSelectedTime);
+        } else {
+            appointmentTimeComboBox.setValue(null);
+        }
+    }
+
+    private boolean isTimeBookedForSelectedDate(String timeText) {
+        if (appointmentDatePicker.getValue() == null || timeText == null || timeText.isBlank()) {
+            return false;
+        }
+
+        String selectedDateTime = appointmentDatePicker.getValue() + "T" + timeText;
+
+        return appointmentItems.stream()
+                .anyMatch(appointment ->
+                        appointment.getAppointmentDateTime() != null
+                                && appointment.getAppointmentDateTime().startsWith(selectedDateTime)
+                                && (editingAppointmentId == null || !appointment.getId().equals(editingAppointmentId))
+                );
     }
 
     private void setupPatientComboBox() {
@@ -149,6 +207,34 @@ public class AppointmentsController {
                 if (date != null && date.isBefore(LocalDate.now())) {
                     setDisable(true);
                     setStyle("-fx-background-color: #f7d6d6; -fx-text-fill: #999999;");
+                }
+            }
+        });
+    }
+
+    private void setupStatusColumnColors() {
+        statusColumn.setCellFactory(column -> new TableCell<>() {
+            @Override
+            protected void updateItem(String status, boolean empty) {
+                super.updateItem(status, empty);
+
+                setText(null);
+                setStyle("");
+
+                if (empty || status == null || status.isBlank()) {
+                    return;
+                }
+
+                setText(status);
+
+                if ("SCHEDULED".equalsIgnoreCase(status)) {
+                    setStyle("-fx-text-fill: #2f6fed; -fx-font-weight: bold;");
+                } else if ("CANCELLED".equalsIgnoreCase(status)) {
+                    setStyle("-fx-text-fill: #e74c3c; -fx-font-weight: bold;");
+                } else if ("COMPLETED".equalsIgnoreCase(status)) {
+                    setStyle("-fx-text-fill: #1f7a42; -fx-font-weight: bold;");
+                } else {
+                    setStyle("-fx-font-weight: bold;");
                 }
             }
         });
@@ -245,7 +331,7 @@ public class AppointmentsController {
             clearForm();
             loadAppointments();
         } else {
-            showError("Failed to create appointment. Please check the backend response.");
+            showError(appointmentService.getLastErrorMessage());
         }
     }
 
@@ -264,6 +350,8 @@ public class AppointmentsController {
         statusComboBox.setValue(appointment.getStatus());
         notesField.setText(appointment.getNotes());
 
+        setDateAndTimeFields(appointment.getAppointmentDateTime());
+        refreshAvailableTimeSlots();
         setDateAndTimeFields(appointment.getAppointmentDateTime());
 
         showSuccess("Editing appointment for: " + appointment.getPatientName());
@@ -299,7 +387,7 @@ public class AppointmentsController {
             clearForm();
             loadAppointments();
         } else {
-            showError("Failed to update appointment");
+            showError(appointmentService.getLastErrorMessage());
         }
     }
 
@@ -335,7 +423,7 @@ public class AppointmentsController {
             clearForm();
             loadAppointments();
         } else {
-            showError("Failed to delete appointment");
+            showError(appointmentService.getLastErrorMessage());
         }
     }
 
@@ -356,6 +444,121 @@ public class AppointmentsController {
     @FXML
     protected void onSearchClick() {
         filterAppointments(searchField.getText());
+    }
+
+    @FXML
+    protected void onViewDayScheduleClick() {
+        showDayScheduleWindow();
+    }
+
+    private void showDayScheduleWindow() {
+        DatePicker dayPicker = new DatePicker(LocalDate.now());
+
+        TableView<AppointmentModel> dayTable = new TableView<>();
+        dayTable.setPrefHeight(420);
+
+        TableColumn<AppointmentModel, String> patientColumn = new TableColumn<>("Patient");
+        patientColumn.setPrefWidth(180);
+        patientColumn.setCellValueFactory(new PropertyValueFactory<>("patientName"));
+
+        TableColumn<AppointmentModel, String> timeColumn = new TableColumn<>("Time");
+        timeColumn.setPrefWidth(120);
+        timeColumn.setCellValueFactory(new PropertyValueFactory<>("appointmentDateTime"));
+        timeColumn.setCellFactory(column -> new TableCell<>() {
+            @Override
+            protected void updateItem(String dateTime, boolean empty) {
+                super.updateItem(dateTime, empty);
+
+                if (empty || dateTime == null || dateTime.isBlank()) {
+                    setText("");
+                } else {
+                    setText(extractTime(dateTime));
+                }
+            }
+        });
+
+        TableColumn<AppointmentModel, String> scheduleStatusColumn = new TableColumn<>("Status");
+        scheduleStatusColumn.setPrefWidth(120);
+        scheduleStatusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
+        scheduleStatusColumn.setCellFactory(column -> new TableCell<>() {
+            @Override
+            protected void updateItem(String status, boolean empty) {
+                super.updateItem(status, empty);
+
+                setText(null);
+                setStyle("");
+
+                if (empty || status == null || status.isBlank()) {
+                    return;
+                }
+
+                setText(status);
+
+                if ("SCHEDULED".equalsIgnoreCase(status)) {
+                    setStyle("-fx-text-fill: #2f6fed; -fx-font-weight: bold;");
+                } else if ("CANCELLED".equalsIgnoreCase(status)) {
+                    setStyle("-fx-text-fill: #e74c3c; -fx-font-weight: bold;");
+                } else if ("COMPLETED".equalsIgnoreCase(status)) {
+                    setStyle("-fx-text-fill: #1f7a42; -fx-font-weight: bold;");
+                } else {
+                    setStyle("-fx-font-weight: bold;");
+                }
+            }
+        });
+
+        TableColumn<AppointmentModel, String> doctorColumn = new TableColumn<>("Doctor");
+        doctorColumn.setPrefWidth(170);
+        doctorColumn.setCellValueFactory(new PropertyValueFactory<>("doctorName"));
+
+        TableColumn<AppointmentModel, String> notesColumn = new TableColumn<>("Notes");
+        notesColumn.setPrefWidth(240);
+        notesColumn.setCellValueFactory(new PropertyValueFactory<>("notes"));
+
+        dayTable.getColumns().addAll(patientColumn, timeColumn, scheduleStatusColumn, doctorColumn, notesColumn);
+
+        Label titleLabel = new Label("Appointments for selected day");
+        titleLabel.getStyleClass().add("section-title");
+
+        Label infoLabel = new Label("Select a day to see all booked appointments.");
+        infoLabel.getStyleClass().add("small-text");
+
+        VBox root = new VBox(14, titleLabel, dayPicker, infoLabel, dayTable);
+        root.setPadding(new javafx.geometry.Insets(18));
+        root.getStyleClass().add("dashboard-root");
+
+        dayPicker.valueProperty().addListener((observable, oldValue, newValue) -> {
+            fillDayScheduleTable(dayTable, newValue);
+        });
+
+        fillDayScheduleTable(dayTable, dayPicker.getValue());
+
+        Stage stage = new Stage();
+        stage.setTitle("Day Schedule");
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.setScene(new Scene(root, 900, 560));
+        stage.getScene().getStylesheets().add(
+                ClinicApplication.class.getResource("login.css").toExternalForm()
+        );
+        stage.showAndWait();
+    }
+
+    private void fillDayScheduleTable(TableView<AppointmentModel> dayTable, LocalDate selectedDate) {
+        if (selectedDate == null) {
+            dayTable.setItems(FXCollections.observableArrayList());
+            return;
+        }
+
+        String selectedDateText = selectedDate.toString();
+
+        List<AppointmentModel> appointmentsForDay = appointmentItems.stream()
+                .filter(appointment ->
+                        appointment.getAppointmentDateTime() != null
+                                && appointment.getAppointmentDateTime().startsWith(selectedDateText)
+                )
+                .sorted((a1, a2) -> safe(a1.getAppointmentDateTime()).compareTo(safe(a2.getAppointmentDateTime())))
+                .collect(Collectors.toList());
+
+        dayTable.setItems(FXCollections.observableArrayList(appointmentsForDay));
     }
 
     private void filterAppointments(String keyword) {
@@ -399,6 +602,8 @@ public class AppointmentsController {
         } else {
             appointmentsTable.setItems(appointmentItems);
         }
+
+        refreshAvailableTimeSlots();
     }
 
     private AppointmentFormData getFormData() {
@@ -411,8 +616,8 @@ public class AppointmentsController {
 
         String appointmentDateTime = "";
 
-        if (appointmentDatePicker.getValue() != null && !safe(appointmentTimeField.getText()).isBlank()) {
-            appointmentDateTime = appointmentDatePicker.getValue() + "T" + appointmentTimeField.getText().trim();
+        if (appointmentDatePicker.getValue() != null && appointmentTimeComboBox.getValue() != null) {
+            appointmentDateTime = appointmentDatePicker.getValue() + "T" + appointmentTimeComboBox.getValue();
         }
 
         return new AppointmentFormData(patientId, appointmentDateTime, status, doctorName, notes);
@@ -434,11 +639,6 @@ public class AppointmentsController {
             return false;
         }
 
-        if (!isValidTime(appointmentTimeField.getText())) {
-            showError("Please enter time in HH:mm format");
-            return false;
-        }
-
         LocalDateTime appointmentDateTime;
 
         try {
@@ -453,6 +653,11 @@ public class AppointmentsController {
             return false;
         }
 
+        if (isTimeSlotAlreadyBooked(appointmentDateTime)) {
+            showError("This time slot is already booked. Please choose another time.");
+            return false;
+        }
+
         if (!isBlank(formData.doctorName()) && formData.doctorName().length() < 2) {
             showError("Doctor name must be at least 2 characters");
             return false;
@@ -461,12 +666,29 @@ public class AppointmentsController {
         return true;
     }
 
+    private boolean isTimeSlotAlreadyBooked(LocalDateTime selectedDateTime) {
+        if (selectedDateTime == null) {
+            return false;
+        }
+
+        String selectedDateTimeText = selectedDateTime.toString();
+
+        return appointmentItems.stream()
+                .anyMatch(appointment ->
+                        appointment.getAppointmentDateTime() != null
+                                && appointment.getAppointmentDateTime().startsWith(selectedDateTimeText)
+                                && (editingAppointmentId == null || !appointment.getId().equals(editingAppointmentId))
+                );
+    }
+
     private void clearForm() {
         editingAppointmentId = null;
 
         patientComboBox.setValue(null);
         appointmentDatePicker.setValue(null);
-        appointmentTimeField.clear();
+        refreshAvailableTimeSlots();
+        appointmentTimeComboBox.setValue(null);
+
         doctorNameField.clear();
         statusComboBox.setValue("SCHEDULED");
         notesField.clear();
@@ -491,30 +713,27 @@ public class AppointmentsController {
     private void setDateAndTimeFields(String appointmentDateTime) {
         if (appointmentDateTime == null || appointmentDateTime.isBlank()) {
             appointmentDatePicker.setValue(null);
-            appointmentTimeField.clear();
+            appointmentTimeComboBox.setValue(null);
             return;
         }
 
         try {
             LocalDateTime dateTime = LocalDateTime.parse(appointmentDateTime);
             appointmentDatePicker.setValue(dateTime.toLocalDate());
-            appointmentTimeField.setText(dateTime.toLocalTime().toString().substring(0, 5));
+            refreshAvailableTimeSlots();
+            appointmentTimeComboBox.setValue(dateTime.toLocalTime().toString().substring(0, 5));
         } catch (Exception e) {
             appointmentDatePicker.setValue(null);
-            appointmentTimeField.clear();
+            appointmentTimeComboBox.setValue(null);
         }
     }
 
-    private boolean isValidTime(String time) {
-        if (time == null || !time.matches("^([01]\\d|2[0-3]):[0-5]\\d$")) {
-            return false;
-        }
-
+    private String extractTime(String dateTime) {
         try {
-            LocalTime.parse(time);
-            return true;
+            LocalDateTime parsed = LocalDateTime.parse(dateTime);
+            return parsed.toLocalTime().toString().substring(0, 5);
         } catch (Exception e) {
-            return false;
+            return dateTime;
         }
     }
 

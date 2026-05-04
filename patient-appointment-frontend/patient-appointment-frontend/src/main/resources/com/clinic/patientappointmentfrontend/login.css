@@ -532,3 +532,28 @@
     -fx-font-weight: bold;
     -fx-text-fill: white;
 }
+.status-scheduled-cell {
+    -fx-text-fill: #2f6fed;
+    -fx-font-weight: bold;
+}
+
+.status-cancelled-cell {
+    -fx-text-fill: #e74c3c;
+    -fx-font-weight: bold;
+}
+
+.status-completed-cell {
+    -fx-text-fill: #1f7a42;
+    -fx-font-weight: bold;
+}
+.table-view .table-row-cell:selected .status-scheduled-cell {
+    -fx-text-fill: #2f6fed;
+}
+
+.table-view .table-row-cell:selected .status-cancelled-cell {
+    -fx-text-fill: #e74c3c;
+}
+
+.table-view .table-row-cell:selected .status-completed-cell {
+    -fx-text-fill: #1f7a42;
+}

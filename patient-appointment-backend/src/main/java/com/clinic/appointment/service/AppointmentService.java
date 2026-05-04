@@ -61,6 +61,10 @@ public class AppointmentService {
         Patient patient = patientRepository.findById(request.getPatientId())
                 .orElseThrow(() -> new ResourceNotFoundException("Patient not found with id: " + request.getPatientId()));
 
+        if (appointmentRepository.existsByAppointmentDateTime(request.getAppointmentDateTime())) {
+            throw new RuntimeException("An appointment already exists at this date and time");
+        }
+
         Appointment appointment = new Appointment();
         appointment.setPatient(patient);
         appointment.setAppointmentDateTime(request.getAppointmentDateTime());
@@ -78,6 +82,10 @@ public class AppointmentService {
 
         Patient patient = patientRepository.findById(request.getPatientId())
                 .orElseThrow(() -> new ResourceNotFoundException("Patient not found with id: " + request.getPatientId()));
+
+        if (appointmentRepository.existsByAppointmentDateTimeAndIdNot(request.getAppointmentDateTime(), id)) {
+            throw new RuntimeException("An appointment already exists at this date and time");
+        }
 
         appointment.setPatient(patient);
         appointment.setAppointmentDateTime(request.getAppointmentDateTime());

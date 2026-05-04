@@ -2,6 +2,7 @@ package com.clinic.patientappointmentfrontend;
 
 import com.clinic.patientappointmentfrontend.dto.DashboardSummaryResponse;
 import com.clinic.patientappointmentfrontend.service.DashboardService;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -37,19 +38,9 @@ public class SceneManager {
         DashboardController controller = loader.getController();
         controller.setUserData(fullName, role, basicAuthToken);
 
-        DashboardService dashboardService = new DashboardService();
-        DashboardSummaryResponse summary = dashboardService.getSummary(basicAuthToken);
-
-        if (summary != null) {
-            controller.setSummaryData(
-                    summary.getTotalPatients(),
-                    summary.getTotalAppointments(),
-                    summary.getTodayAppointments(),
-                    summary.getTotalUsers()
-            );
-        }
-
         showRoot(root, DEFAULT_WIDTH, DEFAULT_HEIGHT, "Patient Appointment Manager - Dashboard");
+
+        loadDashboardSummaryInBackground(controller, basicAuthToken);
     }
 
     public static void loadPatientsScene(String fullName, String role, String basicAuthToken) throws Exception {
@@ -91,11 +82,38 @@ public class SceneManager {
         showRoot(root, 1200, 700, "Patient Appointment Manager - Users");
     }
 
+    private static void loadDashboardSummaryInBackground(DashboardController controller, String basicAuthToken) {
+        Thread summaryThread = new Thread(() -> {
+            try {
+                DashboardService dashboardService = new DashboardService();
+                DashboardSummaryResponse summary = dashboardService.getSummary(basicAuthToken);
+
+                if (summary != null) {
+                    Platform.runLater(() -> controller.setSummaryData(
+                            summary.getTotalPatients(),
+                            summary.getTotalAppointments(),
+                            summary.getTodayAppointments(),
+                            summary.getTotalUsers()
+                    ));
+                }
+            } catch (Exception ignored) {
+            }
+        });
+
+        summaryThread.setDaemon(true);
+        summaryThread.start();
+    }
+
     private static void showRoot(Parent root, double defaultWidth, double defaultHeight, String title) {
+        if (primaryStage == null) {
+            return;
+        }
+
         boolean wasMaximized = primaryStage.isMaximized();
 
         double currentX = primaryStage.getX();
         double currentY = primaryStage.getY();
+
         double currentWidth = primaryStage.getWidth() > 0 ? primaryStage.getWidth() : defaultWidth;
         double currentHeight = primaryStage.getHeight() > 0 ? primaryStage.getHeight() : defaultHeight;
 
@@ -114,10 +132,13 @@ public class SceneManager {
 
         primaryStage.setTitle(title);
 
-        primaryStage.setX(currentX);
-        primaryStage.setY(currentY);
-        primaryStage.setWidth(currentWidth);
-        primaryStage.setHeight(currentHeight);
+        if (!wasMaximized) {
+            primaryStage.setX(currentX);
+            primaryStage.setY(currentY);
+            primaryStage.setWidth(currentWidth);
+            primaryStage.setHeight(currentHeight);
+        }
+
         primaryStage.setMaximized(wasMaximized);
 
         if (!primaryStage.isShowing()) {
