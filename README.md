@@ -264,6 +264,44 @@ The JavaFX frontend communicates with these APIs using HTTP requests and Basic A
 - Already booked appointment times are hidden from the time selection list for the selected day.
 - Future improvements may include installer packaging, reporting, backup/export tools, advanced calendar views, notifications, and production deployment setup.
 
+
+
+## Screenshots
+
+Project screenshots are stored in the repository root.
+
+### Login
+
+![Login Screen](login.png)
+
+### Register
+
+![Register Screen](register.png)
+
+### Dashboard
+
+![Dashboard Screen](dashboard.png)
+
+### Patients Management
+
+![Patients Management](patients.png)
+
+### Appointments Management
+
+![Appointments Management](appointments.png)
+
+### Day Schedule
+
+![Day Schedule](day-schedule.png)
+
+### Users Management
+
+![Users Management](users.png)
+
+
+
+
 ## Author
 
-Developed by **Haydara Massa**
+ Developed by  
+ ## Haydara Massa
